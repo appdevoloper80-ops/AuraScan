@@ -1,0 +1,6 @@
+{
+  "name": "AuraScan",
+  "description": "Smart document scanner for India with AI-powered recognition and instant smart actions",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
