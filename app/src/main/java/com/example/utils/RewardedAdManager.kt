@@ -16,15 +16,21 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 
 /**
- * Manages Google AdMob Rewarded Ads using the official Google test ad unit.
- * Ad Unit ID: ca-app-pub-3940256099942544/5224354917
+ * Manages Google AdMob Rewarded Ads for AuraScan.
+ * Production Ad Unit ID: ca-app-pub-6086454785172418/1543538492
  */
 object RewardedAdManager {
 
     private const val TAG = "RewardedAdManager"
 
+    // User's Production Ad Unit ID
+    const val PROD_REWARDED_AD_UNIT_ID = "ca-app-pub-6086454785172418/1543538492"
+
     // Official Google Mobile Ads Rewarded Test Ad Unit ID
     const val TEST_REWARDED_AD_UNIT_ID = "ca-app-pub-3940256099942544/5224354917"
+
+    // Active Ad Unit ID used for loading
+    var activeAdUnitId: String = PROD_REWARDED_AD_UNIT_ID
 
     private var rewardedAd: RewardedAd? = null
     private var isInitialized = false
@@ -64,31 +70,58 @@ object RewardedAdManager {
         }
 
         _isLoading.value = true
-        _statusMessage.value = "Loading rewarded test ad..."
+        _statusMessage.value = "Loading AdMob ad..."
 
         val adRequest = AdRequest.Builder().build()
 
         RewardedAd.load(
             context,
-            TEST_REWARDED_AD_UNIT_ID,
+            activeAdUnitId,
             adRequest,
             object : RewardedAdLoadCallback() {
                 override fun onAdLoaded(ad: RewardedAd) {
-                    Log.d(TAG, "Rewarded ad successfully loaded")
+                    Log.d(TAG, "Ad successfully loaded with unit: $activeAdUnitId")
                     rewardedAd = ad
                     _isAdLoaded.value = true
                     _isLoading.value = false
-                    _statusMessage.value = "Rewarded ad ready to show!"
+                    _statusMessage.value = "Ad ready to show!"
                     onComplete?.invoke(true)
                 }
 
                 override fun onAdFailedToLoad(loadAdError: LoadAdError) {
-                    Log.w(TAG, "Rewarded ad failed to load: ${loadAdError.message} (code: ${loadAdError.code})")
-                    rewardedAd = null
-                    _isAdLoaded.value = false
-                    _isLoading.value = false
-                    _statusMessage.value = "Ad failed to load: ${loadAdError.message}"
-                    onComplete?.invoke(false)
+                    Log.w(TAG, "Ad failed with $activeAdUnitId: ${loadAdError.message} (code: ${loadAdError.code})")
+                    // If production unit failed and hasn't tried test unit yet, fallback for dev/demo safety
+                    if (activeAdUnitId != TEST_REWARDED_AD_UNIT_ID) {
+                        Log.d(TAG, "Retrying with test ad unit fallback...")
+                        RewardedAd.load(
+                            context,
+                            TEST_REWARDED_AD_UNIT_ID,
+                            adRequest,
+                            object : RewardedAdLoadCallback() {
+                                override fun onAdLoaded(fallbackAd: RewardedAd) {
+                                    rewardedAd = fallbackAd
+                                    _isAdLoaded.value = true
+                                    _isLoading.value = false
+                                    _statusMessage.value = "Ad ready to show!"
+                                    onComplete?.invoke(true)
+                                }
+
+                                override fun onAdFailedToLoad(err: LoadAdError) {
+                                    rewardedAd = null
+                                    _isAdLoaded.value = false
+                                    _isLoading.value = false
+                                    _statusMessage.value = "Ad unavailable: ${loadAdError.message}"
+                                    onComplete?.invoke(false)
+                                }
+                            }
+                        )
+                    } else {
+                        rewardedAd = null
+                        _isAdLoaded.value = false
+                        _isLoading.value = false
+                        _statusMessage.value = "Ad failed: ${loadAdError.message}"
+                        onComplete?.invoke(false)
+                    }
                 }
             }
         )

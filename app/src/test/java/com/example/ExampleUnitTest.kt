@@ -69,6 +69,14 @@ class ExampleUnitTest {
       "ca-app-pub-3940256099942544/5224354917",
       com.example.utils.RewardedAdManager.TEST_REWARDED_AD_UNIT_ID
     )
+    assertEquals(
+      "ca-app-pub-6086454785172418/1543538492",
+      com.example.utils.RewardedAdManager.PROD_REWARDED_AD_UNIT_ID
+    )
+    assertEquals(
+      "ca-app-pub-6086454785172418~7875023453",
+      com.example.utils.AdConfig.ADMOB_APP_ID
+    )
   }
 }
 

@@ -45,10 +45,10 @@
                 android:resource="@xml/file_paths" />
         </provider>
 
-        <!-- Google Mobile Ads (AdMob) Sample App ID for testing -->
+        <!-- Google Mobile Ads (AdMob) Production App ID -->
         <meta-data
             android:name="com.google.android.gms.ads.APPLICATION_ID"
-            android:value="ca-app-pub-3940256099942544~3347511713"/>
+            android:value="ca-app-pub-6086454785172418~7875023453"/>
     </application>
 
 </manifest>

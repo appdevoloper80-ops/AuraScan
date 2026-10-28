@@ -107,7 +107,7 @@ fun RewardedAdBannerCard(
                             .padding(horizontal = 8.dp, vertical = 4.dp)
                     ) {
                         Text(
-                            text = "TEST AD",
+                            text = "ADMOB",
                             color = Color.White,
                             fontSize = 10.sp,
                             fontWeight = FontWeight.Bold,
@@ -116,7 +116,7 @@ fun RewardedAdBannerCard(
                     }
 
                     Text(
-                        text = "Google AdMob Rewarded",
+                        text = "Google AdMob",
                         fontSize = 13.sp,
                         fontWeight = FontWeight.SemiBold,
                         color = MaterialTheme.colorScheme.onSurface
@@ -268,6 +268,10 @@ fun RewardedAdBannerCard(
                     }
                 }
             }
+
+            // Embedded live AdMob Banner (Unit: ca-app-pub-6086454785172418/1543538492)
+            Spacer(modifier = Modifier.height(12.dp))
+            AdMobBannerView()
         }
     }
 }
