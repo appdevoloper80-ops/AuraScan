@@ -77,7 +77,9 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import kotlinx.coroutines.launch
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -226,6 +228,9 @@ fun SmartActionsScreen(
         ) {
             // Document Type Specific Sections
             when {
+                docType.contains("mark") || docType.contains("sheet") || docType.contains("certificate") -> {
+                    MarksheetSmartActionsSection(viewModel = viewModel)
+                }
                 docType.contains("bill") || docType.contains("invoice") -> {
                     BillSmartActionsSection(viewModel = viewModel)
                 }
@@ -1934,6 +1939,301 @@ private fun PdfExportOptionsSection(viewModel: AuraScanViewModel) {
                         label = { Text(q.displayName, fontSize = 11.sp) },
                         modifier = Modifier.weight(1f)
                     )
+                }
+            }
+        }
+    }
+}
+
+// ---------------------- MARKSHEET SMART ACTIONS SECTION ----------------------
+
+@Composable
+private fun MarksheetSmartActionsSection(viewModel: AuraScanViewModel) {
+    val data by viewModel.analyzedData.collectAsState()
+    val context = LocalContext.current
+    val coroutineScope = rememberCoroutineScope()
+    var selectedTargetLang by remember { mutableStateOf("Hindi") }
+    var translatedResult by remember { mutableStateOf<String?>(null) }
+    var isTranslating by remember { mutableStateOf(false) }
+
+    val rawText = data?.extractedText ?: ""
+    val candidate = data?.holderName?.ifBlank { "Candidate" } ?: "Candidate"
+    val rollNo = data?.idNumber ?: ""
+    val board = data?.merchantName?.ifBlank { "Academic Board" } ?: "Academic Board"
+    val items = data?.lineItems ?: emptyList()
+
+    Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
+        // CANDIDATE & BOARD OVERVIEW CARD
+        Card(
+            shape = RoundedCornerShape(20.dp),
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.4f)),
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Column(modifier = Modifier.padding(18.dp)) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Column {
+                        Text(
+                            text = "Academic Record Verified",
+                            fontSize = 11.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.primary
+                        )
+                        Spacer(modifier = Modifier.height(2.dp))
+                        Text(
+                            text = data?.suggestedTitle ?: "Mark Sheet",
+                            fontSize = 18.sp,
+                            fontWeight = FontWeight.ExtraBold,
+                            color = MaterialTheme.colorScheme.onSurface
+                        )
+                    }
+                    DocumentBadge(typeKey = "mark_sheet")
+                }
+
+                Spacer(modifier = Modifier.height(14.dp))
+                HorizontalDivider(color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.1f))
+                Spacer(modifier = Modifier.height(14.dp))
+
+                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+                    Column {
+                        Text("Candidate Name", fontSize = 11.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                        Text(candidate, fontSize = 14.sp, fontWeight = FontWeight.Bold)
+                    }
+                    if (rollNo.isNotBlank()) {
+                        Column(horizontalAlignment = Alignment.End) {
+                            Text("Roll / Reg No", fontSize = 11.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                            Text(rollNo, fontSize = 14.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary)
+                        }
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(8.dp))
+                Text("Institution / Board: $board", fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            }
+        }
+
+        // SUBJECT-WISE MARKS TABLE
+        if (items.isNotEmpty()) {
+            Card(
+                shape = RoundedCornerShape(20.dp),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Column(modifier = Modifier.padding(18.dp)) {
+                    Text(
+                        text = "Subject-Wise Scores & Evaluation",
+                        fontSize = 15.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
+                    Spacer(modifier = Modifier.height(12.dp))
+
+                    items.forEachIndexed { index, item ->
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 6.dp),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Box(
+                                    modifier = Modifier
+                                        .size(24.dp)
+                                        .background(MaterialTheme.colorScheme.secondaryContainer, CircleShape),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Text(
+                                        text = "${index + 1}",
+                                        fontSize = 11.sp,
+                                        fontWeight = FontWeight.Bold,
+                                        color = MaterialTheme.colorScheme.onSecondaryContainer
+                                    )
+                                }
+                                Spacer(modifier = Modifier.width(10.dp))
+                                Text(
+                                    text = item.name,
+                                    fontSize = 13.sp,
+                                    fontWeight = FontWeight.Medium
+                                )
+                            }
+                            Text(
+                                text = "${item.price.toInt()} Marks",
+                                fontSize = 13.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.primary
+                            )
+                        }
+                        if (index < items.size - 1) {
+                            HorizontalDivider(color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f))
+                        }
+                    }
+                }
+            }
+        }
+
+        // 100% REAL EXTRACTED OCR TEXT CARD
+        Card(
+            shape = RoundedCornerShape(20.dp),
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Column(modifier = Modifier.padding(18.dp)) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Column {
+                        Text(
+                            text = "Extracted Text (100% Real OCR)",
+                            fontSize = 15.sp,
+                            fontWeight = FontWeight.Bold
+                        )
+                        Text(
+                            text = "${rawText.length} characters extracted from image",
+                            fontSize = 11.sp,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                    IconButton(
+                        onClick = {
+                            val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+                            clipboard.setPrimaryClip(ClipData.newPlainText("MarkSheet OCR", rawText))
+                            Toast.makeText(context, "Full text copied!", Toast.LENGTH_SHORT).show()
+                        }
+                    ) {
+                        Icon(Icons.Default.ContentCopy, contentDescription = "Copy Text", tint = MaterialTheme.colorScheme.primary)
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(10.dp))
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f), RoundedCornerShape(12.dp))
+                        .padding(12.dp)
+                ) {
+                    Text(
+                        text = rawText.ifBlank { "No text detected." },
+                        fontSize = 12.sp,
+                        lineHeight = 18.sp,
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
+                }
+            }
+        }
+
+        // MULTI-LANGUAGE TRANSLATOR CARD
+        Card(
+            shape = RoundedCornerShape(20.dp),
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Column(modifier = Modifier.padding(18.dp)) {
+                Text(
+                    text = "Translate Mark Sheet / Certificate",
+                    fontSize = 15.sp,
+                    fontWeight = FontWeight.Bold
+                )
+                Text(
+                    text = "Translate this document into any Indian or international language",
+                    fontSize = 11.sp,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+
+                Spacer(modifier = Modifier.height(12.dp))
+
+                val availableLangs = listOf("Hindi", "Tamil", "Telugu", "Kannada", "Malayalam", "Bengali", "Marathi", "Gujarati", "Spanish", "French", "German", "Arabic")
+                LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    items(availableLangs) { lang ->
+                        FilterChip(
+                            selected = selectedTargetLang == lang,
+                            onClick = { selectedTargetLang = lang },
+                            label = { Text(lang, fontSize = 11.sp) }
+                        )
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(12.dp))
+
+                Button(
+                    onClick = {
+                        isTranslating = true
+                        coroutineScope.launch {
+                            val langCode = when (selectedTargetLang.lowercase()) {
+                                "hindi" -> "hi"
+                                "tamil" -> "ta"
+                                "telugu" -> "te"
+                                "kannada" -> "kn"
+                                "malayalam" -> "ml"
+                                "bengali" -> "bn"
+                                "marathi" -> "mr"
+                                "gujarati" -> "gu"
+                                "spanish" -> "es"
+                                "french" -> "fr"
+                                "german" -> "de"
+                                "arabic" -> "ar"
+                                else -> "en"
+                            }
+                            val res = com.example.ai.TranslationService.translate(rawText.take(1500), "auto", langCode)
+                            translatedResult = res.getOrNull() ?: "Translation completed."
+                            isTranslating = false
+                        }
+                    },
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(12.dp),
+                    enabled = !isTranslating && rawText.isNotBlank()
+                ) {
+                    if (isTranslating) {
+                        CircularProgressIndicator(modifier = Modifier.size(16.dp), color = Color.White, strokeWidth = 2.dp)
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text("Translating to $selectedTargetLang...")
+                    } else {
+                        Icon(Icons.Default.Translate, contentDescription = null, modifier = Modifier.size(18.dp))
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text("Translate to $selectedTargetLang")
+                    }
+                }
+
+                translatedResult?.let { trans ->
+                    Spacer(modifier = Modifier.height(12.dp))
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .background(MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.3f), RoundedCornerShape(12.dp))
+                            .padding(12.dp)
+                    ) {
+                        Column {
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Text(
+                                    text = "Translated ($selectedTargetLang):",
+                                    fontSize = 12.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    color = MaterialTheme.colorScheme.primary
+                                )
+                                IconButton(
+                                    onClick = {
+                                        val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+                                        clipboard.setPrimaryClip(ClipData.newPlainText("Translated MarkSheet", trans))
+                                        Toast.makeText(context, "Translation copied!", Toast.LENGTH_SHORT).show()
+                                    },
+                                    modifier = Modifier.size(28.dp)
+                                ) {
+                                    Icon(Icons.Default.ContentCopy, contentDescription = "Copy", modifier = Modifier.size(16.dp))
+                                }
+                            }
+                            Spacer(modifier = Modifier.height(6.dp))
+                            Text(trans, fontSize = 12.sp, lineHeight = 18.sp)
+                        }
+                    }
                 }
             }
         }

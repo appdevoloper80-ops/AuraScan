@@ -64,6 +64,13 @@ enum class DocumentType(
         icon = Icons.Default.TextSnippet,
         description = "Handwritten paper or memo"
     ),
+    MARKSHEET(
+        key = "mark_sheet",
+        displayName = "Mark Sheet / Certificate",
+        badgeColor = Color(0xFF1976D2),
+        icon = Icons.Default.Description,
+        description = "10th/12th Marks Card, School & College Degree"
+    ),
     OTHER(
         key = "other",
         displayName = "Other Document",
@@ -78,6 +85,7 @@ enum class DocumentType(
             val normalized = raw.trim().lowercase().replace("-", "_")
             return entries.firstOrNull { it.key == normalized }
                 ?: when {
+                    normalized.contains("mark") || normalized.contains("sheet") || normalized.contains("certificate") -> MARKSHEET
                     normalized.contains("aadhaar") || normalized.contains("aadhar") -> AADHAAR
                     normalized.contains("pan") -> PAN
                     normalized.contains("bill") || normalized.contains("invoice") || normalized.contains("receipt") -> BILL_INVOICE

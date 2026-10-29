@@ -98,8 +98,8 @@ fun RewardedAdBannerCard(
                             .background(
                                 Brush.linearGradient(
                                     listOf(
-                                        MaterialTheme.colorScheme.primary,
-                                        MaterialTheme.colorScheme.tertiary
+                                        Color(0xFFE91E63),
+                                        Color(0xFF9C27B0)
                                     )
                                 ),
                                 shape = RoundedCornerShape(8.dp)
@@ -107,7 +107,7 @@ fun RewardedAdBannerCard(
                             .padding(horizontal = 8.dp, vertical = 4.dp)
                     ) {
                         Text(
-                            text = "ADMOB",
+                            text = "REWARD",
                             color = Color.White,
                             fontSize = 10.sp,
                             fontWeight = FontWeight.Bold,
@@ -116,9 +116,9 @@ fun RewardedAdBannerCard(
                     }
 
                     Text(
-                        text = "Google AdMob",
-                        fontSize = 13.sp,
-                        fontWeight = FontWeight.SemiBold,
+                        text = "Bonus AI Credits",
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.Bold,
                         color = MaterialTheme.colorScheme.onSurface
                     )
                 }
@@ -154,20 +154,10 @@ fun RewardedAdBannerCard(
 
             // Body Description
             Text(
-                text = "Watch a rewarded test video ad to earn free credits for Gemini AI analysis, instant flashcards, and high-res PDF exports.",
+                text = "Watch a quick sponsor video to earn free credits for 100% OCR scanning, multi-language translations, and high-quality PDF exports.",
                 fontSize = 13.sp,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 lineHeight = 18.sp
-            )
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            // Ad Unit ID info tag
-            Text(
-                text = "Unit ID: ${RewardedAdManager.TEST_REWARDED_AD_UNIT_ID}",
-                fontSize = 10.sp,
-                fontFamily = FontFamily.Monospace,
-                color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.75f)
             )
 
             Spacer(modifier = Modifier.height(14.dp))
@@ -264,7 +254,7 @@ fun RewardedAdBannerCard(
                             modifier = Modifier.size(18.dp)
                         )
                         Spacer(modifier = Modifier.width(6.dp))
-                        Text("Watch Ad (+5)")
+                        Text("Claim +5 Credits")
                     }
                 }
             }
