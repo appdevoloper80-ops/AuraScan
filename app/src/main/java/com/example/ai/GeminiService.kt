@@ -113,7 +113,7 @@ class GeminiService(private val customApiKey: String? = null) {
                 return@withContext Result.success(realOcrData)
             }
 
-            val parsedData = parseGeminiResponse(responseBody, bitmap)
+            val parsedData = parseGeminiResponse(responseBody, bitmap, realOcrData)
             val finalData = if (parsedData.extractedText.isBlank()) {
                 parsedData.copy(extractedText = realOcrData.extractedText)
             } else {
@@ -641,7 +641,11 @@ class GeminiService(private val customApiKey: String? = null) {
         }
     }
 
-    private fun parseGeminiResponse(rawResponseBody: String, originalBitmap: Bitmap): AnalyzedDocumentData {
+    private fun parseGeminiResponse(
+        rawResponseBody: String,
+        originalBitmap: Bitmap,
+        realOcrData: AnalyzedDocumentData
+    ): AnalyzedDocumentData {
         try {
             val root = JSONObject(rawResponseBody)
             val candidates = root.optJSONArray("candidates")
@@ -654,13 +658,43 @@ class GeminiService(private val customApiKey: String? = null) {
             val cleanJson = cleanJsonString(candidateText)
             val json = JSONObject(cleanJson)
 
-            val docType = json.optString("documentType", "other").lowercase()
-            val title = json.optString("suggestedTitle", "Scanned Document")
+            val rawDocType = json.optString("documentType", "other").lowercase()
+            val rawTitle = json.optString("suggestedTitle", "Scanned Document")
             val extractedText = json.optString("extractedText", "")
             val language = json.optString("language", "English")
             val confidence = json.optDouble("confidence", 0.95).toFloat()
 
-            // Bill
+            // Marksheet Details (CBSE, ICSE, State Boards, Transcripts)
+            val marksheetJson = json.optJSONObject("marksheetDetails")
+            val isMarksheet = rawDocType.contains("mark") || rawDocType.contains("sheet") || rawDocType.contains("certificate") || marksheetJson != null
+            val finalDocType = if (isMarksheet) "mark_sheet" else rawDocType
+
+            val candidateName = marksheetJson?.optString("candidateName", "") ?: ""
+            val rollNumber = marksheetJson?.optString("rollNumber", "") ?: ""
+            val boardName = marksheetJson?.optString("boardName", "") ?: ""
+            val examName = marksheetJson?.optString("examinationName", "") ?: ""
+            val schoolName = marksheetJson?.optString("schoolName", "") ?: ""
+            val totalMarks = marksheetJson?.optString("totalMarks", "") ?: ""
+            val percentageOrCgpa = marksheetJson?.optString("percentageOrCgpa", "") ?: ""
+            val resultStatus = marksheetJson?.optString("resultStatus", "") ?: ""
+
+            val marksheetSubjects = mutableListOf<BillLineItem>()
+            marksheetJson?.optJSONArray("subjects")?.let { arr ->
+                for (i in 0 until arr.length()) {
+                    val sub = arr.optJSONObject(i)
+                    if (sub != null) {
+                        marksheetSubjects.add(
+                            BillLineItem(
+                                name = sub.optString("name", "Subject ${i + 1}"),
+                                qty = 1.0,
+                                price = sub.optDouble("price", 0.0)
+                            )
+                        )
+                    }
+                }
+            }
+
+            // Bill / Invoice
             val billJson = json.optJSONObject("billDetails")
             val merchantName = billJson?.optString("merchantName", "") ?: ""
             val invoiceDate = billJson?.optString("invoiceDate", "") ?: ""
@@ -711,12 +745,57 @@ class GeminiService(private val customApiKey: String? = null) {
                 }
             }
 
+            // Intelligent field mapping for marksheet vs bill vs ID
+            val finalHolderName = when {
+                holderName.isNotBlank() -> holderName
+                candidateName.isNotBlank() -> candidateName
+                isMarksheet -> realOcrData.holderName
+                else -> ""
+            }
+
+            val finalIdNumber = when {
+                idNumber.isNotBlank() -> idNumber
+                rollNumber.isNotBlank() -> rollNumber
+                isMarksheet -> realOcrData.idNumber
+                else -> ""
+            }
+
+            val finalMerchantName = when {
+                merchantName.isNotBlank() -> merchantName
+                boardName.isNotBlank() -> boardName
+                isMarksheet -> realOcrData.merchantName
+                else -> ""
+            }
+
+            val finalLineItems = when {
+                lineItems.isNotEmpty() -> lineItems
+                marksheetSubjects.isNotEmpty() -> marksheetSubjects
+                isMarksheet -> realOcrData.lineItems
+                else -> emptyList()
+            }
+
             // Notes
             val notesJson = json.optJSONObject("notesDetails")
             val summaryBullets = mutableListOf<String>()
             notesJson?.optJSONArray("summaryBullets")?.let { arr ->
                 for (i in 0 until arr.length()) {
                     summaryBullets.add(arr.optString(i))
+                }
+            }
+
+            // If Marksheet, build structured summary bullets
+            if (isMarksheet) {
+                if (summaryBullets.isEmpty()) {
+                    if (boardName.isNotBlank()) summaryBullets.add("Board: $boardName")
+                    if (examName.isNotBlank()) summaryBullets.add("Examination: $examName")
+                    if (candidateName.isNotBlank()) summaryBullets.add("Candidate: $candidateName")
+                    if (rollNumber.isNotBlank()) summaryBullets.add("Roll Number: $rollNumber")
+                    if (schoolName.isNotBlank()) summaryBullets.add("School: $schoolName")
+                    if (totalMarks.isNotBlank()) summaryBullets.add("Total Score: $totalMarks")
+                    if (percentageOrCgpa.isNotBlank()) summaryBullets.add("Result / Percentage: $percentageOrCgpa ($resultStatus)")
+                }
+                if (summaryBullets.isEmpty() && realOcrData.summaryBullets.isNotEmpty()) {
+                    summaryBullets.addAll(realOcrData.summaryBullets)
                 }
             }
 
@@ -819,23 +898,29 @@ class GeminiService(private val customApiKey: String? = null) {
                 for (i in 0 until arr.length()) suggestedBullets.add(arr.optString(i))
             }
 
+            val finalTitle = when {
+                rawTitle.isNotBlank() && rawTitle != "Scanned Document" -> rawTitle
+                isMarksheet -> if (boardName.isNotBlank()) "$boardName Mark Sheet" else "Class 10th / Secondary Mark Sheet"
+                else -> realOcrData.suggestedTitle
+            }
+
             return AnalyzedDocumentData(
-                documentType = docType,
-                suggestedTitle = title,
-                extractedText = extractedText,
+                documentType = finalDocType,
+                suggestedTitle = finalTitle,
+                extractedText = if (extractedText.isNotBlank()) extractedText else realOcrData.extractedText,
                 language = language,
                 confidence = confidence,
-                merchantName = merchantName,
+                merchantName = finalMerchantName,
                 invoiceDate = invoiceDate,
-                lineItems = lineItems,
+                lineItems = finalLineItems,
                 subtotal = subtotal,
                 taxBreakdown = taxBreakdown,
                 totalAmount = totalAmount,
                 suggestedExpenseCategory = expenseCat,
                 idType = idType,
-                idNumber = idNumber,
+                idNumber = finalIdNumber,
                 maskedIdNumber = maskedIdNumber,
-                holderName = holderName,
+                holderName = finalHolderName,
                 sensitiveBoxes = sensitiveBoxes,
                 summaryBullets = summaryBullets,
                 flashcards = flashcards,
@@ -851,8 +936,8 @@ class GeminiService(private val customApiKey: String? = null) {
                 handwrittenBulletNotes = suggestedBullets
             )
         } catch (e: Exception) {
-            Log.e("GeminiService", "Failed to parse API JSON, returning heuristic fallback", e)
-            return createHeuristicFallback(originalBitmap)
+            Log.e("GeminiService", "Failed to parse API JSON, returning verified OCR analysis", e)
+            return realOcrData
         }
     }
 

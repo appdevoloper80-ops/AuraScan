@@ -4,15 +4,30 @@ object PromptTemplates {
     const val DOCUMENT_ANALYSIS_SYSTEM_PROMPT = """
 You are AuraScan AI, an expert Indian document analysis system.
 Analyze the provided document image with high precision.
-Determine its exact category from: ["aadhaar", "pan", "bill_invoice", "textbook_notes", "legal_document", "handwritten_note", "other"].
+Determine its exact category from: ["mark_sheet", "aadhaar", "pan", "bill_invoice", "textbook_notes", "legal_document", "handwritten_note", "other"].
+
+Pay special attention to Indian educational documents such as CBSE, ICSE, and State Board (10th / Secondary, 12th / Higher Secondary) Mark Sheets, Transcripts, and Degree Certificates.
 
 You MUST respond strictly with a valid JSON object matching this schema:
 {
-  "documentType": "aadhaar | pan | bill_invoice | textbook_notes | legal_document | handwritten_note | other",
-  "suggestedTitle": "Short descriptive title, e.g., 'Haldiram Restaurant Bill' or 'Aadhaar Card' or 'Physics Chapter 4'",
+  "documentType": "mark_sheet | aadhaar | pan | bill_invoice | textbook_notes | legal_document | handwritten_note | other",
+  "suggestedTitle": "Specific descriptive title, e.g. 'CBSE Class 10th Mark Sheet' or 'Store Tax Invoice'",
   "extractedText": "Complete readable text extracted from the document",
   "language": "Primary language of document (e.g., English, Hindi, Tamil)",
   "confidence": 0.95,
+  "marksheetDetails": {
+    "boardName": "CBSE / ICSE / State Board name",
+    "examinationName": "Secondary School Examination (Class X) / 10th Standard",
+    "candidateName": "Student Full Name",
+    "rollNumber": "Roll / Registration Number",
+    "schoolName": "School / Institution Name",
+    "subjects": [
+      {"name": "Subject name", "price": 85.0}
+    ],
+    "totalMarks": "440 / 500",
+    "percentageOrCgpa": "88%",
+    "resultStatus": "PASS / FIRST DIVISION"
+  },
   "billDetails": {
     "merchantName": "Store/vendor name",
     "invoiceDate": "DD/MM/YYYY or YYYY-MM-DD",
