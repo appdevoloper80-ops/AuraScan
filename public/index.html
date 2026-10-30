@@ -3,29 +3,33 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Privacy Policy - AuraScan</title>
+    <title>AuraScan — Smart AI Document Scanner & Expense Manager</title>
+    <meta name="description" content="AuraScan is the next-generation AI document scanner for Android. Edge detection, ML Kit OCR, Gemini AI analysis, GST & bill splitting, and 100% on-device privacy.">
+    <link rel="icon" type="image/jpeg" href="/logo.jpg">
     <style>
         :root {
-            --primary: #1A73E8;
-            --primary-dark: #1557B0;
-            --text-main: #202124;
-            --text-secondary: #5F6368;
-            --bg-body: #F8F9FA;
-            --bg-card: #FFFFFF;
-            --border-color: #DADCE0;
-            --accent-green: #0F9D58;
+            --primary: #4361EE;
+            --primary-dark: #3A0CA3;
+            --accent: #4CC9F0;
+            --accent-purple: #7209B7;
+            --text-dark: #0F172A;
+            --text-muted: #64748B;
+            --bg-page: #F8FAFC;
+            --card-bg: #FFFFFF;
+            --border-light: #E2E8F0;
+            --gradient-hero: linear-gradient(135deg, #4361EE 0%, #3A0CA3 50%, #7209B7 100%);
         }
 
         @media (prefers-color-scheme: dark) {
             :root {
-                --primary: #8AB4F8;
-                --primary-dark: #669DF6;
-                --text-main: #E8EAED;
-                --text-secondary: #9AA0A6;
-                --bg-body: #121212;
-                --bg-card: #1E1E1E;
-                --border-color: #3C4043;
-                --accent-green: #81C995;
+                --primary: #4CC9F0;
+                --primary-dark: #4361EE;
+                --accent: #7209B7;
+                --text-dark: #F8FAFC;
+                --text-muted: #94A3B8;
+                --bg-page: #0B0F19;
+                --card-bg: #151D2F;
+                --border-light: #1E293B;
             }
         }
 
@@ -36,271 +40,705 @@
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: var(--bg-page);
+            color: var(--text-dark);
             line-height: 1.6;
-            color: var(--text-main);
-            background-color: var(--bg-body);
-            padding: 24px 16px;
+            overflow-x: hidden;
         }
 
-        .container {
-            max-width: 840px;
-            margin: 0 auto;
-            background: var(--bg-card);
-            padding: 40px 32px;
-            border-radius: 16px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.08), 0 4px 12px rgba(0,0,0,0.05);
-            border: 1px solid var(--border-color);
-        }
-
+        /* HEADER & NAVBAR */
         header {
-            border-bottom: 2px solid var(--border-color);
-            padding-bottom: 24px;
-            margin-bottom: 32px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background-color: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border-light);
+            transition: all 0.3s ease;
         }
 
-        .app-badge {
-            display: inline-block;
-            background: var(--primary);
-            color: white;
-            font-size: 13px;
-            font-weight: 600;
-            padding: 4px 12px;
-            border-radius: 20px;
-            margin-bottom: 12px;
-            letter-spacing: 0.5px;
+        @media (prefers-color-scheme: dark) {
+            header {
+                background-color: rgba(11, 15, 25, 0.85);
+            }
         }
 
-        h1 {
-            font-size: 28px;
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 14px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .brand-logo {
+            width: 42px;
+            height: 42px;
+            border-radius: 10px;
+            object-fit: cover;
+            box-shadow: 0 4px 10px rgba(67, 97, 238, 0.3);
+        }
+
+        .brand-name {
+            font-size: 22px;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            background: linear-gradient(135deg, #4361EE, #7209B7);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .brand-badge {
+            font-size: 11px;
             font-weight: 700;
-            margin-bottom: 8px;
-            color: var(--text-main);
-        }
-
-        .meta-info {
-            font-size: 14px;
-            color: var(--text-secondary);
-        }
-
-        h2 {
-            font-size: 20px;
-            font-weight: 600;
-            margin: 32px 0 12px 0;
+            padding: 2px 8px;
+            border-radius: 12px;
+            background-color: rgba(67, 97, 238, 0.12);
             color: var(--primary);
-            border-left: 4px solid var(--primary);
-            padding-left: 10px;
+            margin-left: 4px;
         }
 
-        h3 {
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 24px;
+            list-style: none;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--text-muted);
+            font-size: 15px;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+
+        .nav-links a:hover {
+            color: var(--primary);
+        }
+
+        .nav-cta {
+            background: var(--primary);
+            color: #FFFFFF !important;
+            padding: 8px 18px;
+            border-radius: 20px;
+            font-weight: 600;
+            box-shadow: 0 4px 14px rgba(67, 97, 238, 0.3);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .nav-cta:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 18px rgba(67, 97, 238, 0.45);
+        }
+
+        /* HERO SECTION */
+        .hero {
+            position: relative;
+            padding: 80px 24px 60px 24px;
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1.2fr 0.8fr;
+            gap: 48px;
+            align-items: center;
+        }
+
+        .hero-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 16px;
+            border-radius: 30px;
+            background: rgba(67, 97, 238, 0.1);
+            color: var(--primary);
+            font-size: 13px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            border: 1px solid rgba(67, 97, 238, 0.2);
+        }
+
+        .hero h1 {
+            font-size: 52px;
+            font-weight: 900;
+            line-height: 1.15;
+            letter-spacing: -1.5px;
+            margin-bottom: 20px;
+        }
+
+        .hero h1 span {
+            background: linear-gradient(135deg, #4361EE 0%, #7209B7 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero p {
+            font-size: 18px;
+            color: var(--text-muted);
+            margin-bottom: 32px;
+            max-width: 580px;
+            line-height: 1.7;
+        }
+
+        .hero-actions {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .btn-primary {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            background: linear-gradient(135deg, #4361EE, #3A0CA3);
+            color: #FFFFFF;
+            padding: 14px 28px;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 700;
+            text-decoration: none;
+            box-shadow: 0 8px 24px rgba(67, 97, 238, 0.35);
+            transition: all 0.2s;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 30px rgba(67, 97, 238, 0.5);
+        }
+
+        .btn-secondary {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--card-bg);
+            color: var(--text-dark);
+            padding: 14px 24px;
+            border-radius: 12px;
             font-size: 16px;
             font-weight: 600;
-            margin: 16px 0 8px 0;
-        }
-
-        p, li {
-            font-size: 15px;
-            color: var(--text-main);
-            margin-bottom: 12px;
-        }
-
-        ul {
-            padding-left: 24px;
-            margin-bottom: 16px;
-        }
-
-        li {
-            margin-bottom: 8px;
-        }
-
-        .highlight-box {
-            background-color: rgba(26, 115, 232, 0.08);
-            border: 1px solid rgba(26, 115, 232, 0.25);
-            border-radius: 8px;
-            padding: 16px 20px;
-            margin: 20px 0;
-        }
-
-        .table-container {
-            overflow-x: auto;
-            margin: 20px 0;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 14px;
-        }
-
-        th, td {
-            padding: 12px 14px;
-            text-align: left;
-            border: 1px solid var(--border-color);
-        }
-
-        th {
-            background-color: rgba(0, 0, 0, 0.04);
-            font-weight: 600;
-        }
-
-        a {
-            color: var(--primary);
             text-decoration: none;
-            font-weight: 500;
+            border: 1px solid var(--border-light);
+            transition: all 0.2s;
         }
 
-        a:hover {
-            text-decoration: underline;
+        .btn-secondary:hover {
+            border-color: var(--primary);
+            color: var(--primary);
         }
 
-        footer {
-            margin-top: 40px;
-            padding-top: 20px;
-            border-top: 1px solid var(--border-color);
-            font-size: 13px;
-            color: var(--text-secondary);
+        /* PHONE MOCKUP */
+        .mockup-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+        }
+
+        .mockup-glow {
+            position: absolute;
+            width: 320px;
+            height: 320px;
+            background: radial-gradient(circle, rgba(67, 97, 238, 0.35) 0%, rgba(114, 9, 183, 0) 70%);
+            filter: blur(40px);
+            z-index: 1;
+        }
+
+        .phone-frame {
+            position: relative;
+            z-index: 2;
+            width: 290px;
+            height: 580px;
+            background: #000000;
+            border-radius: 40px;
+            padding: 12px;
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.35), inset 0 0 2px 2px rgba(255, 255, 255, 0.15);
+            border: 4px solid #1E293B;
+        }
+
+        .phone-screen {
+            width: 100%;
+            height: 100%;
+            background: #0F172A;
+            border-radius: 30px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            color: #FFFFFF;
+            position: relative;
+        }
+
+        .screen-notch {
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 16px;
+            font-size: 11px;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .screen-viewfinder {
+            flex: 1;
+            margin: 12px;
+            border-radius: 16px;
+            background: linear-gradient(180deg, #1E293B 0%, #0F172A 100%);
+            border: 2px dashed #4CC9F0;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
             text-align: center;
         }
 
-        .contact-card {
-            background-color: var(--bg-body);
-            padding: 16px;
+        .viewfinder-badge {
+            position: absolute;
+            top: 12px;
+            background: rgba(76, 201, 240, 0.2);
+            color: #4CC9F0;
+            border: 1px solid #4CC9F0;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 10px;
+            font-weight: 700;
+        }
+
+        .viewfinder-doc {
+            width: 170px;
+            height: 210px;
+            background: #FFFFFF;
+            color: #0F172A;
             border-radius: 8px;
-            border: 1px solid var(--border-color);
-            margin-top: 12px;
+            padding: 12px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.4);
+            font-size: 9px;
+            text-align: left;
+            position: relative;
+        }
+
+        .viewfinder-doc-header {
+            font-weight: 800;
+            color: #4361EE;
+            border-bottom: 1px solid #E2E8F0;
+            padding-bottom: 4px;
+            margin-bottom: 6px;
+        }
+
+        .doc-line {
+            height: 4px;
+            background: #E2E8F0;
+            border-radius: 2px;
+            margin-bottom: 4px;
+        }
+
+        .screen-bottom-bar {
+            height: 70px;
+            display: flex;
+            align-items: center;
+            justify-content: space-around;
+            padding: 0 16px;
+            background: rgba(15, 23, 42, 0.95);
+        }
+
+        .shutter-btn {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            border: 3px solid #FFFFFF;
+            background: #4361EE;
+            box-shadow: 0 0 14px rgba(67, 97, 238, 0.8);
+        }
+
+        /* FEATURES SECTION */
+        .features {
+            max-width: 1200px;
+            margin: 60px auto;
+            padding: 0 24px;
+        }
+
+        .section-header {
+            text-align: center;
+            max-width: 700px;
+            margin: 0 auto 50px auto;
+        }
+
+        .section-header h2 {
+            font-size: 38px;
+            font-weight: 800;
+            margin-bottom: 14px;
+            letter-spacing: -0.8px;
+        }
+
+        .section-header p {
+            font-size: 17px;
+            color: var(--text-muted);
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 24px;
+        }
+
+        .feature-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-light);
+            border-radius: 18px;
+            padding: 32px 28px;
+            transition: all 0.25s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
+            border-color: var(--primary);
+        }
+
+        .feature-icon {
+            width: 54px;
+            height: 54px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 26px;
+            margin-bottom: 20px;
+            background: rgba(67, 97, 238, 0.1);
+        }
+
+        .feature-card h3 {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .feature-card p {
+            font-size: 15px;
+            color: var(--text-muted);
+            line-height: 1.6;
+        }
+
+        /* PRIVACY BANNER */
+        .privacy-highlight {
+            max-width: 1200px;
+            margin: 80px auto;
+            padding: 48px;
+            background: linear-gradient(135deg, rgba(67, 97, 238, 0.08) 0%, rgba(114, 9, 183, 0.08) 100%);
+            border: 1px solid rgba(67, 97, 238, 0.25);
+            border-radius: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 32px;
+            flex-wrap: wrap;
+        }
+
+        .privacy-highlight h2 {
+            font-size: 30px;
+            font-weight: 800;
+            margin-bottom: 8px;
+        }
+
+        .privacy-highlight p {
+            font-size: 16px;
+            color: var(--text-muted);
+            max-width: 600px;
+        }
+
+        /* SPECS TABLE */
+        .specs-section {
+            max-width: 800px;
+            margin: 60px auto;
+            padding: 0 24px;
+        }
+
+        .specs-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: var(--card-bg);
+            border-radius: 14px;
+            overflow: hidden;
+            border: 1px solid var(--border-light);
+        }
+
+        .specs-table th, .specs-table td {
+            padding: 16px 20px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-light);
+            font-size: 15px;
+        }
+
+        .specs-table th {
+            width: 35%;
+            color: var(--text-muted);
+            font-weight: 600;
+            background: rgba(0, 0, 0, 0.02);
+        }
+
+        .specs-table td {
+            font-weight: 600;
+        }
+
+        /* FOOTER */
+        footer {
+            border-top: 1px solid var(--border-light);
+            padding: 48px 24px 32px 24px;
+            background: var(--card-bg);
+            margin-top: 80px;
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 24px;
+        }
+
+        .footer-links {
+            display: flex;
+            gap: 20px;
+            list-style: none;
+        }
+
+        .footer-links a {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        .footer-links a:hover {
+            color: var(--primary);
+        }
+
+        .copyright {
+            font-size: 14px;
+            color: var(--text-muted);
+        }
+
+        @media (max-width: 900px) {
+            .hero {
+                grid-template-columns: 1fr;
+                text-align: center;
+                padding-top: 40px;
+            }
+
+            .hero h1 {
+                font-size: 38px;
+            }
+
+            .hero p {
+                margin: 0 auto 28px auto;
+            }
+
+            .hero-actions {
+                justify-content: center;
+            }
+
+            .mockup-container {
+                margin-top: 30px;
+            }
+
+            .nav-links {
+                display: none;
+            }
         }
     </style>
 </head>
 <body>
 
-<div class="container">
+    <!-- NAVBAR -->
     <header>
-        <span class="app-badge">OFFICIAL PRIVACY POLICY</span>
-        <h1>Privacy Policy for AuraScan</h1>
-        <div class="meta-info">
-            <p><strong>Application:</strong> AuraScan (Smart Document Scanner for India)</p>
-            <p><strong>Package Name (Application ID):</strong> <code>com.aistudio.aurascan.xrkp</code></p>
-            <p><strong>Effective Date:</strong> October 27, 2026 | <strong>Last Updated:</strong> October 27, 2026</p>
+        <div class="nav-container">
+            <a href="/" class="brand">
+                <img src="/logo.jpg" alt="AuraScan Logo" class="brand-logo" onerror="this.style.display='none'">
+                <div>
+                    <span class="brand-name">AuraScan</span>
+                    <span class="brand-badge">v1.0.3</span>
+                </div>
+            </a>
+            <ul class="nav-links">
+                <li><a href="#features">Features</a></li>
+                <li><a href="#specs">Specifications</a></li>
+                <li><a href="/privacy.html">Privacy Policy</a></li>
+                <li><a href="#download" class="nav-cta">Get AuraScan</a></li>
+            </ul>
         </div>
     </header>
 
-    <div class="highlight-box">
-        <p><strong>Summary:</strong> AuraScan is built with a privacy-first approach. Your captured documents, scans, and financial logs are stored locally on your device. We do not sell your personal data. Document processing and AI actions use encrypted HTTPS connections, and camera permissions are strictly activated only when you actively take a scan.</p>
-    </div>
+    <!-- HERO SECTION -->
+    <section class="hero">
+        <div class="hero-text">
+            <div class="hero-pill">
+                <span>⚡ Version 1.0.3 Ready</span>
+                <span>•</span>
+                <span>Google Play Ready</span>
+            </div>
+            <h1>The Next-Gen <span>AI Document Scanner</span> for Android</h1>
+            <p>Scan invoices, IDs, study notes, and bills with sub-millimeter edge detection. Powered by on-device ML Kit OCR and Google Gemini AI for instant summaries and GST bill analysis.</p>
+            <div class="hero-actions">
+                <a href="https://play.google.com/store/apps/details?id=com.aistudio.aurascan.xrkp" class="btn-primary" target="_blank" rel="noopener">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M3.609 1.814L13.793 12 3.61 22.186a2.44 2.44 0 0 1-.61-.926V2.74c.174-.35.385-.668.61-.926zm11.602 11.604l2.584 2.584-12.78 7.378 10.196-9.962zm0-2.836L5.015.62l12.78 7.378-2.584 2.584zm1.415 1.418l3.963 2.289c1.168.675 1.168 1.776 0 2.451l-3.963 2.289-2.37-2.37 2.37-2.37z"/>
+                    </svg>
+                    Google Play
+                </a>
+                <a href="/privacy.html" class="btn-secondary">
+                    View Privacy Policy
+                </a>
+            </div>
+        </div>
 
-    <h2>1. Introduction</h2>
-    <p>This Privacy Policy explains how <strong>AuraScan</strong> ("we", "our", or "the App") collects, uses, handles, and safeguards your information when you use our Android mobile application. AuraScan complies with the <strong>Google Play Developer Program Policies</strong>, including the User Data policy and Permissions requirements.</p>
-    <p>By downloading, installing, or using AuraScan, you consent to the practices described in this Privacy Policy.</p>
+        <div class="mockup-container">
+            <div class="mockup-glow"></div>
+            <div class="phone-frame">
+                <div class="phone-screen">
+                    <div class="screen-notch">
+                        <span>9:41</span>
+                        <span>5G 100%</span>
+                    </div>
+                    <div class="screen-viewfinder">
+                        <span class="viewfinder-badge">DOCUMENT DETECTED</span>
+                        <div class="viewfinder-doc">
+                            <div class="viewfinder-doc-header">TAX INVOICE</div>
+                            <div class="doc-line" style="width: 70%"></div>
+                            <div class="doc-line" style="width: 90%"></div>
+                            <div class="doc-line" style="width: 40%"></div>
+                            <div style="margin-top: 10px; font-weight: 700; color: #0F9D58; font-size: 8px;">
+                                GST: ₹340.00 | Total: ₹2,240.00
+                            </div>
+                        </div>
+                    </div>
+                    <div class="screen-bottom-bar">
+                        <div style="font-size: 11px; color: #94A3B8;">Auto Flash</div>
+                        <div class="shutter-btn"></div>
+                        <div style="font-size: 11px; color: #4CC9F0;">HD Filter</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
 
-    <h2>2. Permissions Requested & Why We Need Them</h2>
-    <p>AuraScan adheres to the principle of least privilege, requesting only standard and runtime permissions essential to app functionality:</p>
+    <!-- FEATURES -->
+    <section class="features" id="features">
+        <div class="section-header">
+            <h2>Engineered for High-Speed Productivity</h2>
+            <p>Every tool you need to digitize paperwork, extract critical numbers, and organize your finances with zero friction.</p>
+        </div>
 
-    <div class="table-container">
-        <table>
-            <thead>
-                <tr>
-                    <th>Permission</th>
-                    <th>Type</th>
-                    <th>Purpose & Usage</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td><strong>CAMERA</strong></td>
-                    <td>Runtime</td>
-                    <td>Required solely to allow you to take photos of paper documents, bills, IDs, and notes within the app viewfinder. We <em>never</em> access your camera in the background or without your explicit action.</td>
-                </tr>
-                <tr>
-                    <td><strong>INTERNET</strong></td>
-                    <td>Standard</td>
-                    <td>Used to securely connect to the Google Gemini AI API for optical character recognition (OCR), document classification, and summary generation, and to serve advertisements via Google AdMob.</td>
-                </tr>
-                <tr>
-                    <td><strong>VIBRATE</strong></td>
-                    <td>Standard</td>
-                    <td>Provides subtle haptic feedback when you successfully capture a page or tap action buttons for an improved user experience.</td>
-                </tr>
-            </tbody>
+        <div class="feature-grid">
+            <div class="feature-card">
+                <div class="feature-icon">📐</div>
+                <h3>Auto-Crop & Edge Snapping</h3>
+                <p>Real-time boundary detection isolates contracts, receipts, and identity cards from any background with automatic perspective correction.</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">🔍</div>
+                <h3>On-Device ML Kit OCR</h3>
+                <p>Lightning-fast text extraction runs locally on your device. Extract phone numbers, emails, addresses, and tables instantly without internet.</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">🤖</div>
+                <h3>Google Gemini AI Insights</h3>
+                <p>Send complex legal documents, medical reports, or long articles to Gemini AI for instant structured summaries, action items, and translations.</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">🧾</div>
+                <h3>Smart Indian GST & Bill Split</h3>
+                <p>Built specifically for Indian businesses and consumers. Automatically extracts GSTIN, CGST/SGST/IGST breakdown, and splits group expenses with UPI.</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">📄</div>
+                <h3>High-Res PDF & Image Export</h3>
+                <p>Export in A4, Letter, or Legal page sizes with customizable compression (Low, Medium, High) and secure password encryption.</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">🛡️</div>
+                <h3>100% Private & Sandboxed</h3>
+                <p>Your documents never leave your phone unless you explicitly trigger an AI summary. No accounts, no trackers, and zero server logging.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- PRIVACY HIGHLIGHT BANNER -->
+    <section class="privacy-highlight">
+        <div>
+            <h2>Your Documents Belong to You. Period.</h2>
+            <p>AuraScan does not store your scanned files on any remote servers. Camera permissions are strictly limited to active scanning sessions.</p>
+        </div>
+        <div>
+            <a href="/privacy.html" class="btn-primary" style="background: #0F172A;">
+                Read Privacy Policy
+            </a>
+        </div>
+    </section>
+
+    <!-- SPECIFICATIONS -->
+    <section class="specs-section" id="specs">
+        <div class="section-header">
+            <h2>Application Specifications</h2>
+        </div>
+        <table class="specs-table">
+            <tr>
+                <th>App Name</th>
+                <td>AuraScan</td>
+            </tr>
+            <tr>
+                <th>Application ID</th>
+                <td><code>com.aistudio.aurascan.xrkp</code></td>
+            </tr>
+            <tr>
+                <th>Current Version</th>
+                <td>1.0.3 (Version Code 4)</td>
+            </tr>
+            <tr>
+                <th>Target OS</th>
+                <td>Android 7.0 (API 24) to Android 15 (API 35/36)</td>
+            </tr>
+            <tr>
+                <th>Framework</th>
+                <td>Kotlin & Jetpack Compose (M3)</td>
+            </tr>
+            <tr>
+                <th>Developer Contact</th>
+                <td><a href="mailto:appdevoloper80@gmail.com">appdevoloper80@gmail.com</a></td>
+            </tr>
         </table>
-    </div>
+    </section>
 
-    <h2>3. Information We Collect and Process</h2>
-
-    <h3>A. User-Provided Content (Local Scans & Images)</h3>
-    <ul>
-        <li><strong>Document Images & Pages:</strong> Photos you capture with the camera or import from your photo picker are saved <strong>locally</strong> in the app's sandboxed internal storage on your device.</li>
-        <li><strong>Extracted Text & Expense Records:</strong> Text extracted from documents and bill entries (merchant, amount, GST) are stored securely in your on-device local database.</li>
-    </ul>
-
-    <h3>B. Artificial Intelligence (AI) Document Analysis</h3>
-    <p>When you choose to analyze a document, the document image is sent via secure, encrypted HTTPS transmission to the <strong>Google Gemini API</strong> to perform text recognition (OCR), auto-classify the document type (e.g., Aadhaar, PAN card, Invoice, Textbook Notes, Legal), and provide summaries.</p>
-    <ul>
-        <li>We do not store your documents on private remote servers.</li>
-        <li>Your documents and personal text are not used to train machine learning models.</li>
-        <li>Data transmission is encrypted in transit using industry-standard Transport Layer Security (TLS/HTTPS).</li>
-    </ul>
-
-    <h3>C. Third-Party Advertising (Google AdMob)</h3>
-    <p>AuraScan uses Google AdMob to display rewarded video ads. Google AdMob may collect and process certain non-personally identifiable device data in accordance with Google's Advertising Privacy Policies:</p>
-    <ul>
-        <li>Advertising ID (GAID)</li>
-        <li>Device identifiers, device model, and operating system version</li>
-        <li>IP address (for coarse geographic location and fraud prevention)</li>
-        <li>Ad interaction and performance metrics</li>
-    </ul>
-    <p>For more details on how Google uses data from apps using its services, please visit: <a href="https://policies.google.com/technologies/partner-sites" target="_blank" rel="noopener">Google Privacy & Terms</a>.</p>
-
-    <h2>4. How We Use Your Information</h2>
-    <p>The information processed by AuraScan is used exclusively to:</p>
-    <ul>
-        <li>Capture, crop, filter, and organize your scanned documents.</li>
-        <li>Extract OCR text and generate formatted PDF documents and images for export.</li>
-        <li>Calculate bill totals, split shares, and log personal expenses locally.</li>
-        <li>Provide rewarded app features through Google AdMob.</li>
-    </ul>
-
-    <h2>5. Data Retention, Storage, and Deletion</h2>
-    <ul>
-        <li><strong>Local Storage:</strong> All scanned files, images, PDFs, and expense records remain on your device.</li>
-        <li><strong>User-Controlled Deletion:</strong> You have full control over your data. Deleting a scan or an expense entry in the app immediately and permanently purges it from your device storage.</li>
-        <li><strong>App Uninstall:</strong> Uninstalling the application automatically deletes all locally stored scans, cached thumbnails, and local database records via standard Android sandboxing.</li>
-    </ul>
-
-    <h2>6. Children's Privacy (COPPA Compliance)</h2>
-    <p>AuraScan is a general audience productivity tool and is not directed to children under the age of 13. We do not knowingly collect or solicit personal information from children under 13. If you believe that a child has provided us with personal information, please contact us immediately so we can take appropriate steps.</p>
-
-    <h2>7. Third-Party Services & Links</h2>
-    <p>The app integrates with trusted third-party service providers that have their own independent privacy policies:</p>
-    <ul>
-        <li><a href="https://policies.google.com/privacy" target="_blank" rel="noopener">Google Privacy Policy</a></li>
-        <li><a href="https://support.google.com/admob/answer/6128543" target="_blank" rel="noopener">Google AdMob Privacy & Policy Guidelines</a></li>
-        <li><a href="https://ai.google.dev/terms" target="_blank" rel="noopener">Google Gemini API Terms of Service</a></li>
-    </ul>
-
-    <h2>8. Security Safeguards</h2>
-    <p>We implement robust technical and organizational security measures:</p>
-    <ul>
-        <li>All network transmissions (API calls and ad requests) are strictly forced over HTTPS/TLS encryption.</li>
-        <li>Local app files are kept in Android private app storage, inaccessible to other apps without root permissions.</li>
-        <li>No user accounts, passwords, or personal credentials are required to use AuraScan.</li>
-    </ul>
-
-    <h2>9. Changes to This Privacy Policy</h2>
-    <p>We may update this Privacy Policy from time to time to reflect changes in our practices or applicable legal and regulatory requirements. We will notify users by updating the "Last Updated" date at the top of this policy and publishing the revised version at this URL.</p>
-
-    <h2>10. Contact Us & Developer Information</h2>
-    <p>If you have any questions, feedback, or data privacy requests regarding this Privacy Policy or AuraScan, please contact the developer:</p>
-
-    <div class="contact-card">
-        <p><strong>Developer / Support Email:</strong> <a href="mailto:appdevoloper80@gmail.com">appdevoloper80@gmail.com</a></p>
-        <p><strong>App:</strong> AuraScan</p>
-        <p><strong>Application ID:</strong> <code>com.aistudio.aurascan.xrkp</code></p>
-    </div>
-
+    <!-- FOOTER -->
     <footer>
-        <p>&copy; 2026 AuraScan. All rights reserved.</p>
+        <div class="footer-content">
+            <div class="brand">
+                <span class="brand-name">AuraScan</span>
+                <span class="copyright">&copy; 2026 AuraScan. All rights reserved.</span>
+            </div>
+            <ul class="footer-links">
+                <li><a href="/privacy.html">Privacy Policy</a></li>
+                <li><a href="mailto:appdevoloper80@gmail.com">Developer Support</a></li>
+                <li><a href="#features">Features</a></li>
+            </ul>
+        </div>
     </footer>
-</div>
 
 </body>
 </html>

@@ -2,13 +2,8 @@
   "version": 2,
   "cleanUrls": true,
   "trailingSlash": false,
-  "routes": [
-    {
-      "handle": "filesystem"
-    },
-    {
-      "src": "/.*",
-      "dest": "/index.html"
-    }
+  "rewrites": [
+    { "source": "/privacy", "destination": "/privacy.html" },
+    { "source": "/privacy-policy", "destination": "/privacy.html" }
   ]
 }
