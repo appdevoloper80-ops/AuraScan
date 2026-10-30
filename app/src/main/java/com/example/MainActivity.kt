@@ -39,21 +39,32 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
+        timber.log.Timber.i("MainActivity onCreate initiated")
 
-        setContent {
-            val themeMode by viewModel.appThemeMode.collectAsState()
-            val isDark = when (themeMode) {
-                "light" -> false
-                "dark" -> true
-                else -> isSystemInDarkTheme()
-            }
+        try {
+            enableEdgeToEdge()
+        } catch (e: Throwable) {
+            timber.log.Timber.w(e, "Edge-to-edge fallback")
+        }
 
-            AuraScanTheme(darkTheme = isDark) {
-                Surface(modifier = Modifier.fillMaxSize()) {
-                    AuraScanApp(viewModel = viewModel)
+        try {
+            setContent {
+                val themeMode by viewModel.appThemeMode.collectAsState()
+                val isDark = when (themeMode) {
+                    "light" -> false
+                    "dark" -> true
+                    else -> isSystemInDarkTheme()
+                }
+
+                AuraScanTheme(darkTheme = isDark) {
+                    Surface(modifier = Modifier.fillMaxSize()) {
+                        AuraScanApp(viewModel = viewModel)
+                    }
                 }
             }
+        } catch (t: Throwable) {
+            timber.log.Timber.e(t, "Failed to render Compose content")
+            android.util.Log.e("MainActivity", "Failed to render Compose content", t)
         }
     }
 }

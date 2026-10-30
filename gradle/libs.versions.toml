@@ -43,6 +43,7 @@ googleid = "1.1.1"
 playServicesAds = "23.6.0"
 appcompat = "1.7.0"
 playServicesMlkitTextRecognition = "19.0.1"
+timber = "5.0.1"
 
 
 [libraries]
@@ -100,6 +101,7 @@ androidx-credentials-play-services = { group = "androidx.credentials", name = "c
 googleid = { group = "com.google.android.libraries.identity.googleid", name = "googleid", version.ref = "googleid" }
 play-services-ads = { group = "com.google.android.gms", name = "play-services-ads", version.ref = "playServicesAds" }
 play-services-mlkit-text-recognition = { group = "com.google.android.gms", name = "play-services-mlkit-text-recognition", version.ref = "playServicesMlkitTextRecognition" }
+timber = { group = "com.jakewharton.timber", name = "timber", version.ref = "timber" }
 
 
 [plugins]

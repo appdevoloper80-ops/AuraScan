@@ -68,6 +68,11 @@ import com.example.utils.FileUtils
 import com.example.utils.PageSizeOption
 import com.example.utils.PdfQuality
 
+import androidx.compose.material.icons.filled.BugReport
+import androidx.compose.material.icons.filled.ContentCopy
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+
 @Composable
 fun SettingsScreen(
     viewModel: AuraScanViewModel,
@@ -84,6 +89,8 @@ fun SettingsScreen(
 
     var showClearScansDialog by remember { mutableStateOf(false) }
     var showClearEverythingDialog by remember { mutableStateOf(false) }
+    var showCrashLogDialog by remember { mutableStateOf(false) }
+    var crashLogContent by remember { mutableStateOf<String?>(null) }
 
     BackHandler {
         viewModel.navigateTo("home")
@@ -463,10 +470,97 @@ fun SettingsScreen(
                             Spacer(modifier = Modifier.width(6.dp))
                             Text("Send Feedback or Report Bug")
                         }
+
+                        Spacer(modifier = Modifier.height(8.dp))
+
+                        OutlinedButton(
+                            onClick = {
+                                crashLogContent = com.example.AuraScanApplication.getLatestCrashLog(context)
+                                showCrashLogDialog = true
+                            },
+                            shape = RoundedCornerShape(12.dp),
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Icon(Icons.Default.BugReport, contentDescription = null, modifier = Modifier.size(16.dp))
+                            Spacer(modifier = Modifier.width(6.dp))
+                            Text("View Crash & Diagnostic Log")
+                        }
                     }
                 }
             }
         }
+    }
+
+    // DIAGNOSTIC / CRASH LOG DIALOG
+    if (showCrashLogDialog) {
+        AlertDialog(
+            onDismissRequest = { showCrashLogDialog = false },
+            title = {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Icon(Icons.Default.BugReport, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text("Crash & Diagnostics")
+                }
+            },
+            text = {
+                val report = crashLogContent
+                if (report.isNullOrBlank()) {
+                    Text("No crashes recorded! All app modules and background services are healthy.")
+                } else {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(280.dp)
+                            .background(
+                                color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
+                                shape = RoundedCornerShape(8.dp)
+                            )
+                            .padding(8.dp)
+                            .verticalScroll(rememberScrollState())
+                    ) {
+                        Text(
+                            text = report,
+                            fontSize = 11.sp,
+                            fontFamily = androidx.compose.ui.text.font.FontFamily.Monospace,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                }
+            },
+            confirmButton = {
+                if (!crashLogContent.isNullOrBlank()) {
+                    Button(
+                        onClick = {
+                            val clipboard = context.getSystemService(android.content.Context.CLIPBOARD_SERVICE) as android.content.ClipboardManager
+                            val clip = android.content.ClipData.newPlainText("AuraScan Crash Log", crashLogContent)
+                            clipboard.setPrimaryClip(clip)
+                            Toast.makeText(context, "Crash log copied to clipboard!", Toast.LENGTH_SHORT).show()
+                        }
+                    ) {
+                        Icon(Icons.Default.ContentCopy, contentDescription = null, modifier = Modifier.size(14.dp))
+                        Spacer(modifier = Modifier.width(4.dp))
+                        Text("Copy")
+                    }
+                } else {
+                    Button(onClick = { showCrashLogDialog = false }) {
+                        Text("OK")
+                    }
+                }
+            },
+            dismissButton = {
+                if (!crashLogContent.isNullOrBlank()) {
+                    TextButton(
+                        onClick = {
+                            com.example.AuraScanApplication.clearCrashLog(context)
+                            crashLogContent = null
+                            Toast.makeText(context, "Crash log cleared", Toast.LENGTH_SHORT).show()
+                        }
+                    ) {
+                        Text("Clear Log")
+                    }
+                }
+            }
+        )
     }
 
     // CONFIRMATION DIALOG: CLEAR SCANS ONLY
