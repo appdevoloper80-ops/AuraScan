@@ -45,18 +45,23 @@ object RewardedAdManager {
     val statusMessage: StateFlow<String?> = _statusMessage.asStateFlow()
 
     /**
-     * Initialize Google Mobile Ads SDK once per application lifecycle.
+     * Initialize Google Mobile Ads SDK safely once per application lifecycle.
      */
     fun initialize(context: Context) {
         if (isInitialized) return
         try {
-            MobileAds.initialize(context) { status ->
-                Log.d(TAG, "MobileAds initialized: $status")
-                isInitialized = true
-                loadAd(context)
+            android.os.Handler(android.os.Looper.getMainLooper()).post {
+                try {
+                    MobileAds.initialize(context.applicationContext) { status ->
+                        Log.d(TAG, "MobileAds initialized: $status")
+                        isInitialized = true
+                    }
+                } catch (e: Throwable) {
+                    Log.e(TAG, "Failed to initialize MobileAds safely", e)
+                }
             }
-        } catch (e: Exception) {
-            Log.e(TAG, "Failed to initialize MobileAds", e)
+        } catch (e: Throwable) {
+            Log.e(TAG, "Failed to post MobileAds initialization", e)
         }
     }
 
@@ -64,67 +69,84 @@ object RewardedAdManager {
      * Preloads or reloads a rewarded ad unit.
      */
     fun loadAd(context: Context, onComplete: ((Boolean) -> Unit)? = null) {
+        if (!isInitialized) {
+            initialize(context)
+        }
         if (_isLoading.value) {
             onComplete?.invoke(false)
             return
         }
 
-        _isLoading.value = true
-        _statusMessage.value = "Loading AdMob ad..."
+        try {
+            _isLoading.value = true
+            _statusMessage.value = "Loading rewards..."
 
-        val adRequest = AdRequest.Builder().build()
+            val adRequest = AdRequest.Builder().build()
 
-        RewardedAd.load(
-            context,
-            activeAdUnitId,
-            adRequest,
-            object : RewardedAdLoadCallback() {
-                override fun onAdLoaded(ad: RewardedAd) {
-                    Log.d(TAG, "Ad successfully loaded with unit: $activeAdUnitId")
-                    rewardedAd = ad
-                    _isAdLoaded.value = true
-                    _isLoading.value = false
-                    _statusMessage.value = "Ad ready to show!"
-                    onComplete?.invoke(true)
-                }
-
-                override fun onAdFailedToLoad(loadAdError: LoadAdError) {
-                    Log.w(TAG, "Ad failed with $activeAdUnitId: ${loadAdError.message} (code: ${loadAdError.code})")
-                    // If production unit failed and hasn't tried test unit yet, fallback for dev/demo safety
-                    if (activeAdUnitId != TEST_REWARDED_AD_UNIT_ID) {
-                        Log.d(TAG, "Retrying with test ad unit fallback...")
-                        RewardedAd.load(
-                            context,
-                            TEST_REWARDED_AD_UNIT_ID,
-                            adRequest,
-                            object : RewardedAdLoadCallback() {
-                                override fun onAdLoaded(fallbackAd: RewardedAd) {
-                                    rewardedAd = fallbackAd
-                                    _isAdLoaded.value = true
-                                    _isLoading.value = false
-                                    _statusMessage.value = "Ad ready to show!"
-                                    onComplete?.invoke(true)
-                                }
-
-                                override fun onAdFailedToLoad(err: LoadAdError) {
-                                    rewardedAd = null
-                                    _isAdLoaded.value = false
-                                    _isLoading.value = false
-                                    _statusMessage.value = "Ad unavailable: ${loadAdError.message}"
-                                    onComplete?.invoke(false)
-                                }
-                            }
-                        )
-                    } else {
-                        rewardedAd = null
-                        _isAdLoaded.value = false
+            RewardedAd.load(
+                context,
+                activeAdUnitId,
+                adRequest,
+                object : RewardedAdLoadCallback() {
+                    override fun onAdLoaded(ad: RewardedAd) {
+                        Log.d(TAG, "Ad successfully loaded with unit: $activeAdUnitId")
+                        rewardedAd = ad
+                        _isAdLoaded.value = true
                         _isLoading.value = false
-                        _statusMessage.value = "Ad failed: ${loadAdError.message}"
-                        onComplete?.invoke(false)
+                        _statusMessage.value = "Rewards ready!"
+                        onComplete?.invoke(true)
+                    }
+
+                    override fun onAdFailedToLoad(loadAdError: LoadAdError) {
+                        Log.w(TAG, "Ad failed with $activeAdUnitId: ${loadAdError.message}")
+                        if (activeAdUnitId != TEST_REWARDED_AD_UNIT_ID) {
+                            try {
+                                RewardedAd.load(
+                                    context,
+                                    TEST_REWARDED_AD_UNIT_ID,
+                                    adRequest,
+                                    object : RewardedAdLoadCallback() {
+                                        override fun onAdLoaded(fallbackAd: RewardedAd) {
+                                            rewardedAd = fallbackAd
+                                            _isAdLoaded.value = true
+                                            _isLoading.value = false
+                                            _statusMessage.value = "Rewards ready!"
+                                            onComplete?.invoke(true)
+                                        }
+
+                                        override fun onAdFailedToLoad(err: LoadAdError) {
+                                            rewardedAd = null
+                                            _isAdLoaded.value = false
+                                            _isLoading.value = false
+                                            _statusMessage.value = "Rewards temporarily unavailable"
+                                            onComplete?.invoke(false)
+                                        }
+                                    }
+                                )
+                            } catch (e: Throwable) {
+                                rewardedAd = null
+                                _isAdLoaded.value = false
+                                _isLoading.value = false
+                                _statusMessage.value = "Rewards temporarily unavailable"
+                                onComplete?.invoke(false)
+                            }
+                        } else {
+                            rewardedAd = null
+                            _isAdLoaded.value = false
+                            _isLoading.value = false
+                            _statusMessage.value = "Rewards temporarily unavailable"
+                            onComplete?.invoke(false)
+                        }
                     }
                 }
-            }
-        )
+            )
+        } catch (e: Throwable) {
+            Log.e(TAG, "loadAd error", e)
+            rewardedAd = null
+            _isAdLoaded.value = false
+            _isLoading.value = false
+            onComplete?.invoke(false)
+        }
     }
 
     /**

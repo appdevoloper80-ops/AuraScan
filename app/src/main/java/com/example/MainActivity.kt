@@ -41,9 +41,6 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
 
-        // Initialize Google Mobile Ads (AdMob) Rewarded Ads
-        com.example.utils.RewardedAdManager.initialize(this)
-
         setContent {
             val themeMode by viewModel.appThemeMode.collectAsState()
             val isDark = when (themeMode) {
