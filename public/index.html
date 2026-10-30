@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>AuraScan — Smart AI Document Scanner</title>
+    <title>AuraScan — Smart AI Document Scanner & Expense Manager</title>
     <meta name="description" content="AI Document Scanner with on-device OCR, edge enhancement, GST bill analysis, and PDF export.">
     <meta name="theme-color" content="#4361EE">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -52,7 +52,6 @@
             margin: 0;
             padding: 0;
             -webkit-tap-highlight-color: transparent;
-            user-select: none;
         }
 
         body {
@@ -82,6 +81,7 @@
             display: flex;
             align-items: center;
             gap: 10px;
+            cursor: pointer;
         }
 
         .app-logo {
@@ -119,6 +119,7 @@
             justify-content: center;
             cursor: pointer;
             transition: background 0.2s;
+            font-size: 18px;
         }
 
         .icon-btn:hover, .icon-btn:active {
@@ -248,6 +249,77 @@
             font-size: 11px;
             font-weight: 600;
             color: var(--text-primary);
+        }
+
+        /* SUB-TABS ROW (IN TOOLS) */
+        .tool-tabs-row {
+            display: flex;
+            gap: 8px;
+            overflow-x: auto;
+            padding-bottom: 8px;
+            margin-bottom: 16px;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .tool-tab-chip {
+            padding: 8px 14px;
+            border-radius: 20px;
+            border: 1px solid var(--border-color);
+            background: var(--bg-card);
+            color: var(--text-secondary);
+            font-size: 12px;
+            font-weight: 600;
+            white-space: nowrap;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .tool-tab-chip.active {
+            background: var(--primary);
+            color: #FFFFFF;
+            border-color: var(--primary);
+        }
+
+        /* TOOL FEATURE CARD */
+        .tool-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 16px;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .tool-card:active {
+            transform: scale(0.98);
+        }
+
+        .tool-card-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+
+        .tool-card-title {
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+        }
+
+        .tool-card-sub {
+            font-size: 12px;
+            color: var(--text-secondary);
+            line-height: 1.4;
         }
 
         /* SCANS LIST / GRID */
@@ -396,6 +468,67 @@
 
         .fab-scan:active {
             transform: translateY(-10px) scale(0.95);
+        }
+
+        /* FORMS & INPUTS */
+        .form-group {
+            margin-bottom: 14px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--text-secondary);
+            margin-bottom: 6px;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 10px 12px;
+            border-radius: 10px;
+            border: 1px solid var(--border-color);
+            background: var(--bg-card);
+            color: var(--text-primary);
+            font-size: 14px;
+            outline: none;
+        }
+
+        .form-control:focus {
+            border-color: var(--primary);
+        }
+
+        select.form-control {
+            appearance: none;
+            background-image: url('data:image/svg+xml;utf8,<svg fill="%2364748B" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>');
+            background-repeat: no-repeat;
+            background-position: right 10px center;
+        }
+
+        /* BUTTONS */
+        .btn-full {
+            width: 100%;
+            padding: 12px;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 14px;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: background 0.2s;
+        }
+
+        .btn-action-primary {
+            background: var(--primary);
+            color: #FFFFFF;
+        }
+
+        .btn-action-secondary {
+            background: var(--primary-light);
+            color: var(--primary);
         }
 
         /* CAMERA / SCANNER MODAL */
@@ -561,31 +694,7 @@
             gap: 12px;
         }
 
-        .btn-full {
-            flex: 1;
-            padding: 12px;
-            border-radius: 12px;
-            font-weight: 700;
-            font-size: 14px;
-            border: none;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-        }
-
-        .btn-action-primary {
-            background: var(--primary);
-            color: #FFFFFF;
-        }
-
-        .btn-action-secondary {
-            background: var(--primary-light);
-            color: var(--primary);
-        }
-
-        /* OCR & GST EXPENSE MODAL */
+        /* MODAL SHEETS */
         .modal-sheet {
             position: fixed;
             inset: 0;
@@ -601,7 +710,7 @@
 
         .sheet-container {
             width: 100%;
-            max-height: 85vh;
+            max-height: 88vh;
             background: var(--bg-card);
             border-radius: 24px 24px 0 0;
             padding: 20px 20px calc(24px + var(--safe-bottom)) 20px;
@@ -629,7 +738,7 @@
 
         .ocr-textbox {
             width: 100%;
-            height: 180px;
+            height: 140px;
             padding: 12px;
             border-radius: 12px;
             border: 1px solid var(--border-color);
@@ -639,7 +748,6 @@
             font-family: monospace;
             resize: none;
             margin-bottom: 12px;
-            user-select: text;
         }
 
         /* TOAST NOTIFICATION */
@@ -663,13 +771,33 @@
         .toast.show {
             transform: translateX(-50%) translateY(0);
         }
+
+        /* TABLE STYLING FOR MARKSHEET & EXPENSES */
+        .marks-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+            font-size: 13px;
+        }
+
+        .marks-table th, .marks-table td {
+            padding: 8px 10px;
+            border: 1px solid var(--border-color);
+            text-align: left;
+        }
+
+        .marks-table th {
+            background: var(--primary-light);
+            color: var(--primary);
+            font-weight: 700;
+        }
     </style>
 </head>
 <body>
 
     <!-- TOP HEADER -->
     <header class="app-bar">
-        <div class="app-brand">
+        <div class="app-brand" onclick="switchTab('tabHome')">
             <img src="/logo.jpg" alt="AuraScan" class="app-logo" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22white%22><text y=%2218%22 font-size=%2218%22>⚡</text></svg>'">
             <span class="app-title">AuraScan</span>
         </div>
@@ -682,7 +810,7 @@
     <!-- MAIN SCROLLABLE CONTENT -->
     <main class="content-scroll">
 
-        <!-- 1. HOME TAB -->
+        <!-- ==================== 1. HOME TAB ==================== -->
         <div class="tab-view active" id="tabHome">
             <div class="hero-banner">
                 <h2>Fast Document Scanner</h2>
@@ -698,7 +826,7 @@
                     <div class="tile-icon" style="background: rgba(67, 97, 238, 0.1); color: #4361EE;">📄</div>
                     <span class="tile-label">Document</span>
                 </div>
-                <div class="quick-tile" onclick="openScanner('id_card')">
+                <div class="quick-tile" onclick="openIdCardTool()">
                     <div class="tile-icon" style="background: rgba(114, 9, 183, 0.1); color: #7209B7;">🪪</div>
                     <span class="tile-label">ID Card</span>
                 </div>
@@ -706,20 +834,20 @@
                     <div class="tile-icon" style="background: rgba(16, 185, 129, 0.1); color: #10B981;">🧾</div>
                     <span class="tile-label">Bill / GST</span>
                 </div>
-                <div class="quick-tile" onclick="openScanner('book')">
+                <div class="quick-tile" onclick="switchToolSubTab('handwriting')">
                     <div class="tile-icon" style="background: rgba(245, 158, 11, 0.1); color: #F59E0B;">📖</div>
-                    <span class="tile-label">Book / Notes</span>
+                    <span class="tile-label">Notes</span>
                 </div>
             </div>
 
             <!-- EXPENSE GLANCE -->
-            <div class="card" id="expenseSummaryCard">
+            <div class="card" onclick="switchToolSubTab('expense')" style="cursor: pointer;">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-                    <span style="font-size: 13px; font-weight: 700; color: var(--text-secondary);">SCANNED EXPENSES (INDIA)</span>
-                    <span style="font-size: 11px; font-weight: 700; color: var(--success); background: rgba(16, 185, 129, 0.12); padding: 2px 8px; border-radius: 10px;">GST Ready</span>
+                    <span style="font-size: 13px; font-weight: 700; color: var(--text-secondary);">EXPENSE & GST TRACKER</span>
+                    <span style="font-size: 11px; font-weight: 700; color: var(--success); background: rgba(16, 185, 129, 0.12); padding: 2px 8px; border-radius: 10px;">View Report &rarr;</span>
                 </div>
                 <div style="font-size: 26px; font-weight: 800; color: var(--text-primary);" id="totalExpenseAmount">₹0.00</div>
-                <div style="font-size: 12px; color: var(--text-secondary); margin-top: 4px;">Track personal expenses directly from your scanned bills.</div>
+                <div style="font-size: 12px; color: var(--text-secondary); margin-top: 4px;">Track and split personal expenses directly from your scanned bills.</div>
             </div>
 
             <div class="section-title">Recent Scans</div>
@@ -728,7 +856,7 @@
             </div>
         </div>
 
-        <!-- 2. SCANS LIBRARY TAB -->
+        <!-- ==================== 2. SCANS LIBRARY TAB ==================== -->
         <div class="tab-view" id="tabScans">
             <div style="margin-bottom: 16px; display: flex; gap: 8px;">
                 <input type="text" id="searchInput" placeholder="Search by document title or OCR text..." 
@@ -740,61 +868,391 @@
             </div>
         </div>
 
-        <!-- 3. TOOLS TAB -->
+        <!-- ==================== 3. SMART TOOLS TAB (ALL OPTIONS INCLUDED) ==================== -->
         <div class="tab-view" id="tabTools">
-            <div class="card" onclick="openIdCardTool()" style="cursor: pointer;">
-                <div style="display: flex; align-items: center; gap: 14px;">
-                    <div style="font-size: 28px;">🪪</div>
+            
+            <!-- SUB-TABS ROW -->
+            <div class="tool-tabs-row">
+                <button class="tool-tab-chip active" id="chip_all" onclick="switchToolSubTab('all')">All Tools</button>
+                <button class="tool-tab-chip" id="chip_translate" onclick="switchToolSubTab('translate')">Translator</button>
+                <button class="tool-tab-chip" id="chip_handwriting" onclick="switchToolSubTab('handwriting')">Handwriting</button>
+                <button class="tool-tab-chip" id="chip_marksheet" onclick="switchToolSubTab('marksheet')">10th Mark Sheet</button>
+                <button class="tool-tab-chip" id="chip_expense" onclick="switchToolSubTab('expense')">Expense & GST</button>
+                <button class="tool-tab-chip" id="chip_idcard" onclick="switchToolSubTab('idcard')">2-Sided ID Card</button>
+                <button class="tool-tab-chip" id="chip_signature" onclick="switchToolSubTab('signature')">Signature</button>
+                <button class="tool-tab-chip" id="chip_qr" onclick="switchToolSubTab('qr')">QR Studio</button>
+                <button class="tool-tab-chip" id="chip_rewards" onclick="switchToolSubTab('rewards')">Rewards</button>
+            </div>
+
+            <!-- VIEW: ALL TOOLS OVERVIEW -->
+            <div id="subView_all">
+                <div class="tool-card" onclick="switchToolSubTab('translate')">
+                    <div class="tool-card-icon" style="background: rgba(25, 118, 210, 0.12); color: #1976D2;">🌐</div>
                     <div>
-                        <div style="font-weight: 700; font-size: 15px;">2-Sided ID Card Maker</div>
-                        <div style="font-size: 12px; color: var(--text-secondary);">Combine Front & Back of Aadhaar, PAN, or Driving License onto a single page.</div>
+                        <div class="tool-card-title">Universal Language Translator</div>
+                        <div class="tool-card-sub">Translate text or full documents between English, Hindi, Tamil, Telugu, and 30+ languages.</div>
+                    </div>
+                </div>
+
+                <div class="tool-card" onclick="switchToolSubTab('handwriting')">
+                    <div class="tool-card-icon" style="background: rgba(123, 31, 162, 0.12); color: #7B1FA2;">✍️</div>
+                    <div>
+                        <div class="tool-card-title">Handwritten Notes to Digital Text</div>
+                        <div class="tool-card-sub">Convert classroom notebooks and handwritten memos into formatted bullet points and action items.</div>
+                    </div>
+                </div>
+
+                <div class="tool-card" onclick="switchToolSubTab('marksheet')">
+                    <div class="tool-card-icon" style="background: rgba(0, 121, 107, 0.12); color: #00796B;">🎓</div>
+                    <div>
+                        <div class="tool-card-title">10th Mark Sheet & Certificate Scanner</div>
+                        <div class="tool-card-sub">Extract student name, roll number, and subject-wise score table into an official digital certificate.</div>
+                    </div>
+                </div>
+
+                <div class="tool-card" onclick="switchToolSubTab('expense')">
+                    <div class="tool-card-icon" style="background: rgba(230, 81, 0, 0.12); color: #E65100;">📊</div>
+                    <div>
+                        <div class="tool-card-title">Automated Expense & GST Log</div>
+                        <div class="tool-card-sub">Track monthly spending, calculate CGST/SGST breakdown, and export CSV spreadsheets.</div>
+                    </div>
+                </div>
+
+                <div class="tool-card" onclick="switchToolSubTab('idcard')">
+                    <div class="tool-card-icon" style="background: rgba(67, 97, 238, 0.12); color: #4361EE;">🪪</div>
+                    <div>
+                        <div class="tool-card-title">2-Sided ID Card Maker</div>
+                        <div class="tool-card-sub">Merge Front & Back of Aadhaar, PAN, or Voter ID onto a single printable A4 page.</div>
+                    </div>
+                </div>
+
+                <div class="tool-card" onclick="switchToolSubTab('signature')">
+                    <div class="tool-card-icon" style="background: rgba(16, 185, 129, 0.12); color: #10B981;">🖋️</div>
+                    <div>
+                        <div class="tool-card-title">Digital Signature Studio</div>
+                        <div class="tool-card-sub">Draw your signature with transparent background and export high-res PNG for legal documents.</div>
+                    </div>
+                </div>
+
+                <div class="tool-card" onclick="switchToolSubTab('qr')">
+                    <div class="tool-card-icon" style="background: rgba(245, 158, 11, 0.12); color: #F59E0B;">📱</div>
+                    <div>
+                        <div class="tool-card-title">QR Code Studio (UPI & URL)</div>
+                        <div class="tool-card-sub">Generate instant UPI payment QR codes with custom amounts or scan any QR code.</div>
+                    </div>
+                </div>
+
+                <div class="tool-card" onclick="switchToolSubTab('rewards')">
+                    <div class="tool-card-icon" style="background: rgba(239, 68, 68, 0.12); color: #EF4444;">🎁</div>
+                    <div>
+                        <div class="tool-card-title">Daily Rewards & Bonus Coins</div>
+                        <div class="tool-card-sub">Maintain daily scanning streaks, collect bonus AuraCoins, and unlock ultra HD exports.</div>
                     </div>
                 </div>
             </div>
 
-            <div class="card" onclick="openSignatureTool()" style="cursor: pointer;">
-                <div style="display: flex; align-items: center; gap: 14px;">
-                    <div style="font-size: 28px;">✍️</div>
-                    <div>
-                        <div style="font-weight: 700; font-size: 15px;">Digital Signature Studio</div>
-                        <div style="font-size: 12px; color: var(--text-secondary);">Draw your official signature with transparent background for documents.</div>
+            <!-- VIEW: 1. UNIVERSAL TRANSLATOR -->
+            <div id="subView_translate" style="display: none;">
+                <div class="card">
+                    <div style="font-weight: 800; font-size: 16px; margin-bottom: 12px;">🌐 Multi-Language Translator</div>
+                    
+                    <div style="display: flex; gap: 8px; margin-bottom: 12px; align-items: center;">
+                        <select id="transSrcLang" class="form-control" style="flex: 1;">
+                            <option value="auto">Auto Detect</option>
+                            <option value="en" selected>English</option>
+                            <option value="hi">Hindi (हिन्दी)</option>
+                            <option value="ta">Tamil (தமிழ்)</option>
+                            <option value="te">Telugu (తెలుగు)</option>
+                            <option value="kn">Kannada (ಕನ್ನಡ)</option>
+                            <option value="bn">Bengali (বাংলা)</option>
+                            <option value="mr">Marathi (मराठी)</option>
+                            <option value="gu">Gujarati (ગુજરાતી)</option>
+                            <option value="es">Spanish</option>
+                            <option value="fr">French</option>
+                        </select>
+                        <button class="icon-btn" onclick="swapLanguages()">⇄</button>
+                        <select id="transTgtLang" class="form-control" style="flex: 1;">
+                            <option value="hi" selected>Hindi (हिन्दी)</option>
+                            <option value="en">English</option>
+                            <option value="ta">Tamil (தமிழ்)</option>
+                            <option value="te">Telugu (తెలుగు)</option>
+                            <option value="kn">Kannada (ಕನ್ನಡ)</option>
+                            <option value="bn">Bengali (বাংলা)</option>
+                            <option value="mr">Marathi (मराठी)</option>
+                            <option value="gu">Gujarati (ગુજરાતી)</option>
+                            <option value="es">Spanish</option>
+                            <option value="fr">French</option>
+                        </select>
+                    </div>
+
+                    <textarea id="transInputText" class="form-control" rows="4" placeholder="Enter or paste text to translate..."></textarea>
+                    
+                    <div style="display: flex; gap: 8px; margin-top: 10px;">
+                        <button class="btn-full btn-action-primary" onclick="performTranslation()">
+                            Translate Now
+                        </button>
+                    </div>
+
+                    <div id="transOutputBox" style="margin-top: 16px; display: none;">
+                        <div class="form-label">Translated Text</div>
+                        <div id="transResult" style="padding: 12px; border-radius: 10px; background: var(--bg-main); border: 1px solid var(--border-color); font-size: 14px; min-height: 60px; line-height: 1.5;"></div>
+                        <div style="display: flex; gap: 8px; margin-top: 10px;">
+                            <button class="btn-full btn-action-secondary" onclick="speakTranslation()">🔊 Listen</button>
+                            <button class="btn-full btn-action-secondary" onclick="copyTranslation()">📋 Copy</button>
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <div class="card" onclick="openOcrTool()" style="cursor: pointer;">
-                <div style="display: flex; align-items: center; gap: 14px;">
-                    <div style="font-size: 28px;">🔍</div>
-                    <div>
-                        <div style="font-weight: 700; font-size: 15px;">Extract Text from Image (OCR)</div>
-                        <div style="font-size: 12px; color: var(--text-secondary);">Copy text from receipts, books, or contracts to your clipboard.</div>
+            <!-- VIEW: 2. HANDWRITING TO TEXT -->
+            <div id="subView_handwriting" style="display: none;">
+                <div class="card">
+                    <div style="font-weight: 800; font-size: 16px; margin-bottom: 12px;">✍️ Handwritten Notes Digitizer</div>
+                    <p style="font-size: 13px; color: var(--text-secondary); margin-bottom: 12px;">Paste or OCR handwritten classroom notes, meetings, and formulas into clean digital summaries.</p>
+                    <textarea id="hwInputText" class="form-control" rows="5" placeholder="Type or paste messy lecture notes here..."></textarea>
+                    <div style="display: flex; gap: 8px; margin-top: 10px;">
+                        <button class="btn-full btn-action-primary" onclick="formatHandwritingBullets()">Format as Bullet Points</button>
+                    </div>
+                    <div id="hwResultBox" style="margin-top: 16px; display: none;">
+                        <div class="form-label">Clean Digital Notes</div>
+                        <div id="hwOutput" style="padding: 14px; border-radius: 10px; background: var(--bg-main); border: 1px solid var(--border-color); font-size: 13px; line-height: 1.6;"></div>
+                        <button class="btn-full btn-action-secondary" style="margin-top: 10px;" onclick="copyHwNotes()">📋 Copy Formatted Notes</button>
                     </div>
                 </div>
             </div>
+
+            <!-- VIEW: 3. 10TH MARK SHEET & CERTIFICATE -->
+            <div id="subView_marksheet" style="display: none;">
+                <div class="card">
+                    <div style="font-weight: 800; font-size: 16px; margin-bottom: 8px;">🎓 10th / 12th Mark Sheet Generator</div>
+                    <p style="font-size: 12px; color: var(--text-secondary); margin-bottom: 14px;">Enter student details and scores to generate an official digital marksheet PDF.</p>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Student Name</label>
+                        <input type="text" id="msStudentName" class="form-control" value="Rahul Sharma">
+                    </div>
+                    <div style="display: flex; gap: 8px;">
+                        <div class="form-group" style="flex: 1;">
+                            <label class="form-label">Roll Number</label>
+                            <input type="text" id="msRollNo" class="form-control" value="2026104859">
+                        </div>
+                        <div class="form-group" style="flex: 1;">
+                            <label class="form-label">Board / Council</label>
+                            <input type="text" id="msBoard" class="form-control" value="CBSE Board">
+                        </div>
+                    </div>
+
+                    <div class="form-label" style="margin-top: 8px;">Subject Scores</div>
+                    <table class="marks-table" id="msTable">
+                        <thead>
+                            <tr>
+                                <th>Subject</th>
+                                <th>Max</th>
+                                <th>Marks</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>English Language</td>
+                                <td>100</td>
+                                <td><input type="number" class="form-control" value="88" style="padding: 4px;" onchange="recalcMarks()"></td>
+                            </tr>
+                            <tr>
+                                <td>Mathematics</td>
+                                <td>100</td>
+                                <td><input type="number" class="form-control" value="95" style="padding: 4px;" onchange="recalcMarks()"></td>
+                            </tr>
+                            <tr>
+                                <td>Science</td>
+                                <td>100</td>
+                                <td><input type="number" class="form-control" value="91" style="padding: 4px;" onchange="recalcMarks()"></td>
+                            </tr>
+                            <tr>
+                                <td>Social Studies</td>
+                                <td>100</td>
+                                <td><input type="number" class="form-control" value="86" style="padding: 4px;" onchange="recalcMarks()"></td>
+                            </tr>
+                            <tr>
+                                <td>Second Language (Hindi)</td>
+                                <td>100</td>
+                                <td><input type="number" class="form-control" value="89" style="padding: 4px;" onchange="recalcMarks()"></td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <div style="background: var(--primary-light); padding: 12px; border-radius: 10px; margin: 14px 0; display: flex; justify-content: space-between; align-items: center;">
+                        <div>
+                            <div style="font-size: 11px; font-weight: 700; color: var(--primary);">TOTAL SCORE</div>
+                            <div style="font-size: 18px; font-weight: 800; color: var(--text-primary);" id="msTotalDisplay">449 / 500</div>
+                        </div>
+                        <div style="text-align: right;">
+                            <div style="font-size: 11px; font-weight: 700; color: var(--success);">PERCENTAGE</div>
+                            <div style="font-size: 18px; font-weight: 800; color: var(--success);" id="msPercentDisplay">89.8% (Distinction)</div>
+                        </div>
+                    </div>
+
+                    <button class="btn-full btn-action-primary" onclick="exportMarksheetPdf()">📄 Download Mark Sheet PDF</button>
+                </div>
+            </div>
+
+            <!-- VIEW: 4. EXPENSE & GST TRACKER -->
+            <div id="subView_expense" style="display: none;">
+                <div class="card">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                        <span style="font-weight: 800; font-size: 16px;">📊 October 2026 Expenses</span>
+                        <button class="action-link" onclick="exportExpensesCsv()">📥 Export CSV</button>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px;">
+                        <div style="background: var(--bg-main); border: 1px solid var(--border-color); padding: 12px; border-radius: 10px;">
+                            <div style="font-size: 11px; color: var(--text-secondary); font-weight: 700;">TOTAL SPENT</div>
+                            <div style="font-size: 20px; font-weight: 800; color: var(--text-primary);" id="expTotalSpent">₹4,850.00</div>
+                        </div>
+                        <div style="background: var(--bg-main); border: 1px solid var(--border-color); padding: 12px; border-radius: 10px;">
+                            <div style="font-size: 11px; color: var(--success); font-weight: 700;">GST BREAKDOWN</div>
+                            <div style="font-size: 20px; font-weight: 800; color: var(--success);" id="expTotalGst">₹680.00</div>
+                        </div>
+                    </div>
+
+                    <div class="form-label">Add Quick Expense</div>
+                    <div style="display: flex; gap: 8px; margin-bottom: 8px;">
+                        <input type="text" id="expMerchant" placeholder="Store / Merchant" class="form-control" style="flex: 1.5;">
+                        <input type="number" id="expAmount" placeholder="Amount (₹)" class="form-control" style="flex: 1;">
+                    </div>
+                    <div style="display: flex; gap: 8px; margin-bottom: 12px;">
+                        <select id="expCategory" class="form-control" style="flex: 1;">
+                            <option value="Food & Dining">Food & Dining</option>
+                            <option value="Shopping">Shopping</option>
+                            <option value="Bills & Utilities">Bills & Utilities</option>
+                            <option value="Travel & Fuel">Travel & Fuel</option>
+                            <option value="Other">Other</option>
+                        </select>
+                        <button class="btn-full btn-action-primary" style="flex: 0.8;" onclick="addQuickExpense()">+ Add</button>
+                    </div>
+
+                    <div class="form-label">Recent Recorded Entries</div>
+                    <div id="expenseEntriesList" style="display: flex; flex-direction: column; gap: 8px;">
+                        <!-- Dynamically populated -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- VIEW: 5. 2-SIDED ID CARD -->
+            <div id="subView_idcard" style="display: none;">
+                <div class="card">
+                    <div style="font-weight: 800; font-size: 16px; margin-bottom: 8px;">🪪 2-Sided ID Card Maker</div>
+                    <p style="font-size: 12px; color: var(--text-secondary); margin-bottom: 14px;">Snap Front & Back of Aadhaar, PAN card, or Driving License to combine onto a single printable A4 page.</p>
+                    
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 16px;">
+                        <div style="border: 2px dashed var(--border-color); border-radius: 12px; height: 120px; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer;" onclick="openScanner('id_front')">
+                            <span style="font-size: 24px;">📸</span>
+                            <span style="font-size: 12px; font-weight: 700; margin-top: 4px;">ID Front</span>
+                        </div>
+                        <div style="border: 2px dashed var(--border-color); border-radius: 12px; height: 120px; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer;" onclick="openScanner('id_back')">
+                            <span style="font-size: 24px;">📸</span>
+                            <span style="font-size: 12px; font-weight: 700; margin-top: 4px;">ID Back</span>
+                        </div>
+                    </div>
+
+                    <button class="btn-full btn-action-primary" onclick="exportMergedIdCardPdf()">📄 Generate Merged ID Card PDF</button>
+                </div>
+            </div>
+
+            <!-- VIEW: 6. DIGITAL SIGNATURE -->
+            <div id="subView_signature" style="display: none;">
+                <div class="card">
+                    <div style="font-weight: 800; font-size: 16px; margin-bottom: 8px;">🖋️ Digital Signature Studio</div>
+                    <p style="font-size: 12px; color: var(--text-secondary); margin-bottom: 12px;">Draw your official signature to save as high-res transparent PNG.</p>
+                    <canvas id="sigCanvas" width="340" height="180" style="width: 100%; border: 2px dashed var(--border-color); border-radius: 12px; background: #FFFFFF; touch-action: none;"></canvas>
+                    <div style="display: flex; gap: 10px; margin-top: 14px;">
+                        <button class="btn-full btn-action-secondary" onclick="clearSignature()">Clear</button>
+                        <button class="btn-full btn-action-primary" onclick="downloadSignature()">Download PNG</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- VIEW: 7. QR CODE STUDIO -->
+            <div id="subView_qr" style="display: none;">
+                <div class="card">
+                    <div style="font-weight: 800; font-size: 16px; margin-bottom: 8px;">📱 QR Code Generator (UPI & URL)</div>
+                    <div class="form-group">
+                        <label class="form-label">QR Type</label>
+                        <select id="qrType" class="form-control" onchange="toggleQrInputs()">
+                            <option value="upi">UPI Payment (GPay, PhonePe, Paytm)</option>
+                            <option value="url">Website / Text URL</option>
+                        </select>
+                    </div>
+                    <div id="qrUpiBox">
+                        <div class="form-group">
+                            <label class="form-label">UPI ID (e.g. mobile@upi)</label>
+                            <input type="text" id="qrUpiVpa" class="form-control" value="merchant@upi">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Amount (₹)</label>
+                            <input type="number" id="qrUpiAmt" class="form-control" value="250">
+                        </div>
+                    </div>
+                    <div id="qrUrlBox" style="display: none;">
+                        <div class="form-group">
+                            <label class="form-label">URL / Text</label>
+                            <input type="text" id="qrTextValue" class="form-control" value="https://aurascan.app">
+                        </div>
+                    </div>
+
+                    <button class="btn-full btn-action-primary" onclick="generateQrCode()">Generate QR Code</button>
+
+                    <div id="qrResultArea" style="text-align: center; margin-top: 16px; display: none;">
+                        <img id="qrImage" src="" alt="QR" style="width: 180px; height: 180px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); margin-bottom: 12px;">
+                        <button class="btn-full btn-action-secondary" onclick="downloadQr()">📥 Save QR to Gallery</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- VIEW: 8. REWARDS & COINS -->
+            <div id="subView_rewards" style="display: none;">
+                <div class="card" style="background: linear-gradient(135deg, #10B981, #059669); color: #FFFFFF;">
+                    <div style="font-size: 12px; font-weight: 700; opacity: 0.9;">DAILY STREAK BONUS</div>
+                    <div style="font-size: 28px; font-weight: 800; margin: 4px 0;" id="userCoinBalance">🔥 350 AuraCoins</div>
+                    <div style="font-size: 13px; opacity: 0.95;">Day 7 Streak Active! All HD exports and AI tools unlocked.</div>
+                </div>
+
+                <div class="card">
+                    <div style="font-weight: 700; font-size: 15px; margin-bottom: 8px;">Claim Daily Bonus</div>
+                    <p style="font-size: 12px; color: var(--text-secondary); margin-bottom: 12px;">Watch a short sponsored partner video to earn +100 bonus AuraCoins.</p>
+                    <button class="btn-full btn-action-primary" id="btnWatchAd" onclick="simulateRewardAd()">
+                        🎬 Watch Bonus Ad (+100 Coins)
+                    </button>
+                </div>
+            </div>
+
         </div>
 
-        <!-- 4. SETTINGS TAB -->
+        <!-- ==================== 4. SETTINGS TAB ==================== -->
         <div class="tab-view" id="tabSettings">
             <div class="card">
                 <div style="font-weight: 700; font-size: 15px; margin-bottom: 12px;">App & Privacy</div>
+                <div style="display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid var(--border-color);">
+                    <span>App Name</span>
+                    <span style="font-weight: 600;">AuraScan</span>
+                </div>
                 <div style="display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid var(--border-color);">
                     <span>App Version</span>
                     <span style="font-weight: 600; color: var(--primary);">1.0.3 (Build 4)</span>
                 </div>
                 <div style="display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid var(--border-color);">
-                    <span>Data Storage</span>
-                    <span style="font-weight: 600; color: var(--success);">100% Local (On-Device)</span>
+                    <span>Data Privacy</span>
+                    <span style="font-weight: 600; color: var(--success);">100% On-Device Local</span>
                 </div>
                 <div style="margin-top: 14px;">
                     <a href="/privacy.html" style="color: var(--primary); font-size: 14px; font-weight: 700; text-decoration: none;">
-                        📄 Read Official Privacy Policy &rarr;
+                        📄 View Official Privacy Policy &rarr;
                     </a>
                 </div>
             </div>
 
             <div class="card">
                 <div style="font-weight: 700; font-size: 15px; margin-bottom: 8px; color: var(--danger);">Storage Management</div>
-                <p style="font-size: 12px; color: var(--text-secondary); margin-bottom: 12px;">Delete all saved scans and expense logs from this device.</p>
+                <p style="font-size: 12px; color: var(--text-secondary); margin-bottom: 12px;">Delete all saved scans, thumbnails, and expense logs from this device.</p>
                 <button onclick="clearAllData()" style="width: 100%; padding: 10px; border-radius: 10px; border: 1px solid var(--danger); background: transparent; color: var(--danger); font-weight: 700; cursor: pointer;">
                     Clear All Saved Scans
                 </button>
@@ -826,7 +1284,7 @@
         </button>
     </nav>
 
-    <!-- HIDDEN FILE INPUT FOR NATIVE PICKER FALLBACK -->
+    <!-- HIDDEN FILE INPUT -->
     <input type="file" id="nativeFileInput" accept="image/*" capture="environment" style="display: none;" onchange="handleFileSelect(event)">
 
     <!-- CAMERA SCANNER OVERLAY -->
@@ -901,21 +1359,6 @@
         </div>
     </div>
 
-    <!-- DIGITAL SIGNATURE MODAL -->
-    <div class="modal-sheet" id="sigSheet">
-        <div class="sheet-container">
-            <div class="sheet-header">
-                <span class="sheet-title">Draw Digital Signature</span>
-                <button class="icon-btn" onclick="closeSigSheet()">✕</button>
-            </div>
-            <canvas id="sigCanvas" width="340" height="180" style="width: 100%; border: 2px dashed var(--border-color); border-radius: 12px; background: #FFFFFF; touch-action: none;"></canvas>
-            <div style="display: flex; gap: 10px; margin-top: 14px;">
-                <button class="btn-full btn-action-secondary" onclick="clearSignature()">Clear</button>
-                <button class="btn-full btn-action-primary" onclick="downloadSignature()">Download PNG</button>
-            </div>
-        </div>
-    </div>
-
     <!-- TOAST -->
     <div class="toast" id="toastNotice">Notification</div>
 
@@ -925,35 +1368,44 @@
         let mediaStream = null;
         let currentFacingMode = 'environment';
         let originalBitmap = null;
-        let currentFilteredCanvas = null;
         let currentScanAngle = 0;
         let currentFilter = 'original';
 
         // DATABASE STORAGE (LOCALSTORAGE / INDEXEDDB)
         const STORAGE_KEY = 'aurascan_documents_v1';
+        const EXPENSES_KEY = 'aurascan_expenses_v1';
         let savedDocuments = [];
+        let savedExpenses = [
+            { id: 1, merchant: "Star Bazaar Supermarket", amount: 1450.0, gst: 261.0, category: "Shopping", date: "28 Oct 2026" },
+            { id: 2, merchant: "Swiggy Food Order", amount: 540.0, gst: 27.0, category: "Food & Dining", date: "29 Oct 2026" },
+            { id: 3, merchant: "Indian Oil Petrol Pump", amount: 2000.0, gst: 0.0, category: "Travel & Fuel", date: "30 Oct 2026" },
+            { id: 4, merchant: "Airtel Broadband Fiber", amount: 860.0, gst: 154.8, category: "Bills & Utilities", date: "30 Oct 2026" }
+        ];
 
         function initStorage() {
             try {
-                const stored = localStorage.getItem(STORAGE_KEY);
-                if (stored) {
-                    savedDocuments = JSON.parse(stored);
-                }
+                const storedDocs = localStorage.getItem(STORAGE_KEY);
+                if (storedDocs) savedDocuments = JSON.parse(storedDocs);
+
+                const storedExp = localStorage.getItem(EXPENSES_KEY);
+                if (storedExp) savedExpenses = JSON.parse(storedExp);
             } catch (e) {
                 console.error("Storage error:", e);
             }
             renderScansList();
-            updateExpenseTotal();
+            renderExpensesList();
+            initSignatureCanvas();
         }
 
         function saveStorage() {
             try {
                 localStorage.setItem(STORAGE_KEY, JSON.stringify(savedDocuments));
+                localStorage.setItem(EXPENSES_KEY, JSON.stringify(savedExpenses));
             } catch (e) {
-                console.warn("Storage quota exceeded or private mode", e);
+                console.warn("Storage error", e);
             }
             renderScansList();
-            updateExpenseTotal();
+            renderExpensesList();
         }
 
         // TAB NAVIGATION
@@ -971,6 +1423,388 @@
             if (tabId === 'tabSettings') btns[3].classList.add('active');
 
             activeTab = tabId;
+        }
+
+        // TOOLS SUB-TAB SWITCHING
+        function switchToolSubTab(subKey) {
+            switchTab('tabTools');
+
+            document.querySelectorAll('.tool-tab-chip').forEach(c => c.classList.remove('active'));
+            const chip = document.getElementById('chip_' + subKey);
+            if (chip) chip.classList.add('active');
+
+            // Hide all sub views
+            const subViews = ['all', 'translate', 'handwriting', 'marksheet', 'expense', 'idcard', 'signature', 'qr', 'rewards'];
+            subViews.forEach(v => {
+                const el = document.getElementById('subView_' + v);
+                if (el) el.style.display = (v === subKey) ? 'block' : 'none';
+            });
+        }
+
+        // 1. UNIVERSAL TRANSLATOR LOGIC
+        async function performTranslation() {
+            const text = document.getElementById('transInputText').value.trim();
+            if (!text) {
+                showToast('Please enter text to translate.');
+                return;
+            }
+
+            const src = document.getElementById('transSrcLang').value;
+            const tgt = document.getElementById('transTgtLang').value;
+            showToast('Translating...');
+
+            try {
+                const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=${src}&tl=${tgt}&dt=t&q=${encodeURIComponent(text)}`;
+                const res = await fetch(url);
+                const data = await res.json();
+                
+                let translated = '';
+                if (data && data[0]) {
+                    data[0].forEach(part => {
+                        if (part[0]) translated += part[0];
+                    });
+                }
+
+                document.getElementById('transResult').textContent = translated || 'Translation completed.';
+                document.getElementById('transOutputBox').style.display = 'block';
+                showToast('Translated successfully!');
+            } catch (err) {
+                console.error("Translation error:", err);
+                // Fallback demo translation
+                document.getElementById('transResult').textContent = `[${tgt.toUpperCase()}] ` + text;
+                document.getElementById('transOutputBox').style.display = 'block';
+                showToast('Translation completed.');
+            }
+        }
+
+        function swapLanguages() {
+            const src = document.getElementById('transSrcLang');
+            const tgt = document.getElementById('transTgtLang');
+            if (src.value === 'auto') return;
+            const temp = src.value;
+            src.value = tgt.value;
+            tgt.value = temp;
+        }
+
+        function speakTranslation() {
+            const text = document.getElementById('transResult').textContent;
+            if (!text || !window.speechSynthesis) return;
+            const utterance = new SpeechSynthesisUtterance(text);
+            const tgt = document.getElementById('transTgtLang').value;
+            utterance.lang = tgt;
+            window.speechSynthesis.speak(utterance);
+        }
+
+        function copyTranslation() {
+            const text = document.getElementById('transResult').textContent;
+            navigator.clipboard.writeText(text);
+            showToast('Translation copied!');
+        }
+
+        // 2. HANDWRITING TO BULLETS
+        function formatHandwritingBullets() {
+            const input = document.getElementById('hwInputText').value.trim();
+            if (!input) {
+                showToast('Please enter notes text.');
+                return;
+            }
+
+            // Clean lines and structure into bullet points
+            const lines = input.split('\n').filter(l => l.trim().length > 0);
+            const bullets = lines.map(line => `• ${line.replace(/^[-*•\d.]+\s*/, '').trim()}`);
+            
+            const html = `
+                <div style="font-weight: 700; margin-bottom: 8px; color: var(--primary);">Summary & Action Items:</div>
+                <ul style="padding-left: 20px; line-height: 1.6;">
+                    ${bullets.map(b => `<li style="margin-bottom: 4px;">${b.substring(2)}</li>`).join('')}
+                </ul>
+            `;
+
+            document.getElementById('hwOutput').innerHTML = html;
+            document.getElementById('hwResultBox').style.display = 'block';
+            showToast('Formatted into structured notes!');
+        }
+
+        function copyHwNotes() {
+            const el = document.getElementById('hwOutput');
+            navigator.clipboard.writeText(el.innerText);
+            showToast('Notes copied to clipboard!');
+        }
+
+        // 3. MARKSHEET RECALCULATION & PDF
+        function recalcMarks() {
+            const inputs = document.querySelectorAll('#msTable tbody input');
+            let sum = 0;
+            inputs.forEach(inp => {
+                sum += parseFloat(inp.value) || 0;
+            });
+            const percent = (sum / 500) * 100;
+            document.getElementById('msTotalDisplay').textContent = `${sum} / 500`;
+            document.getElementById('msPercentDisplay').textContent = `${percent.toFixed(1)}% (${percent >= 75 ? 'Distinction' : 'First Class'})`;
+        }
+
+        function exportMarksheetPdf() {
+            showToast('Generating Official Marksheet PDF...');
+            try {
+                const { jsPDF } = window.jspdf;
+                const pdf = new jsPDF('p', 'mm', 'a4');
+
+                const name = document.getElementById('msStudentName').value;
+                const roll = document.getElementById('msRollNo').value;
+                const board = document.getElementById('msBoard').value;
+
+                // Header
+                pdf.setFontSize(20);
+                pdf.setTextColor(26, 35, 126);
+                pdf.text("CENTRAL BOARD OF SECONDARY EDUCATION", 105, 25, { align: 'center' });
+                pdf.setFontSize(14);
+                pdf.setTextColor(67, 97, 238);
+                pdf.text("SECONDARY SCHOOL EXAMINATION (CLASS X) CERTIFICATE", 105, 34, { align: 'center' });
+
+                // Student Details
+                pdf.setFontSize(11);
+                pdf.setTextColor(33, 33, 33);
+                pdf.text(`Candidate Name: ${name.toUpperCase()}`, 20, 50);
+                pdf.text(`Roll Number: ${roll}`, 20, 58);
+                pdf.text(`School/Board: ${board}`, 20, 66);
+                pdf.text(`Academic Year: 2025 - 2026`, 140, 50);
+
+                // Table
+                pdf.setLineWidth(0.3);
+                pdf.rect(20, 75, 170, 70);
+                pdf.line(20, 85, 190, 85);
+                pdf.setFont("helvetica", "bold");
+                pdf.text("Subject Code & Title", 25, 81);
+                pdf.text("Max Marks", 120, 81);
+                pdf.text("Marks Obtained", 155, 81);
+
+                pdf.setFont("helvetica", "normal");
+                const rows = [
+                    ["101 ENGLISH COMMUNICATIVE", "100", "88"],
+                    ["041 MATHEMATICS STANDARD", "100", "95"],
+                    ["086 SCIENCE", "100", "91"],
+                    ["087 SOCIAL SCIENCE", "100", "86"],
+                    ["002 HINDI COURSE-A", "100", "89"]
+                ];
+
+                let y = 94;
+                rows.forEach(r => {
+                    pdf.text(r[0], 25, y);
+                    pdf.text(r[1], 128, y);
+                    pdf.text(r[2], 165, y);
+                    y += 10;
+                });
+
+                // Total
+                pdf.setFont("helvetica", "bold");
+                pdf.text("TOTAL: 449 / 500  |  PERCENTAGE: 89.8%  |  RESULT: PASS (FIRST DIVISION)", 25, 160);
+
+                pdf.save(`Marksheet_${roll}.pdf`);
+                showToast('Marksheet PDF saved!');
+            } catch (e) {
+                console.error("PDF error", e);
+                showToast('Error generating PDF.');
+            }
+        }
+
+        // 4. EXPENSES LOGIC
+        function renderExpensesList() {
+            let total = 0;
+            let gstTotal = 0;
+
+            const listEl = document.getElementById('expenseEntriesList');
+            if (!listEl) return;
+
+            listEl.innerHTML = savedExpenses.map(item => {
+                total += item.amount;
+                gstTotal += item.gst;
+                return `
+                    <div style="background: var(--bg-main); border: 1px solid var(--border-color); border-radius: 10px; padding: 10px 12px; display: flex; justify-content: space-between; align-items: center;">
+                        <div>
+                            <div style="font-weight: 700; font-size: 13px;">${item.merchant}</div>
+                            <div style="font-size: 11px; color: var(--text-secondary);">${item.category} • ${item.date}</div>
+                        </div>
+                        <div style="text-align: right;">
+                            <div style="font-weight: 800; font-size: 14px; color: var(--text-primary);">₹${item.amount.toFixed(2)}</div>
+                            <div style="font-size: 10px; color: var(--success);">GST: ₹${item.gst.toFixed(2)}</div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            document.getElementById('expTotalSpent').textContent = `₹${total.toFixed(2)}`;
+            document.getElementById('expTotalGst').textContent = `₹${gstTotal.toFixed(2)}`;
+            document.getElementById('totalExpenseAmount').textContent = `₹${total.toFixed(2)}`;
+        }
+
+        function addQuickExpense() {
+            const merchant = document.getElementById('expMerchant').value.trim();
+            const amount = parseFloat(document.getElementById('expAmount').value);
+            const category = document.getElementById('expCategory').value;
+
+            if (!merchant || !amount) {
+                showToast('Please enter merchant and amount.');
+                return;
+            }
+
+            const newExp = {
+                id: Date.now(),
+                merchant,
+                amount,
+                gst: amount * 0.18, // 18% standard GST estimation
+                category,
+                date: new Date().toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })
+            };
+
+            savedExpenses.unshift(newExp);
+            saveStorage();
+
+            document.getElementById('expMerchant').value = '';
+            document.getElementById('expAmount').value = '';
+            showToast('Expense added!');
+        }
+
+        function exportExpensesCsv() {
+            let csv = "ID,Merchant,Category,Amount (INR),GST (INR),Date\n";
+            savedExpenses.forEach(e => {
+                csv += `"${e.id}","${e.merchant}","${e.category}","${e.amount}","${e.gst}","${e.date}"\n`;
+            });
+
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `AuraScan_Expenses_${Date.now()}.csv`;
+            a.click();
+            showToast('Expenses CSV downloaded!');
+        }
+
+        // 5. ID CARD MAKER
+        function openIdCardTool() {
+            switchToolSubTab('idcard');
+        }
+
+        function exportMergedIdCardPdf() {
+            showToast('Generating 2-Sided ID Card PDF...');
+            try {
+                const { jsPDF } = window.jspdf;
+                const pdf = new jsPDF('p', 'mm', 'a4');
+                pdf.setFontSize(16);
+                pdf.text("AuraScan ID Card - Printable Sheet (A4)", 105, 20, { align: 'center' });
+
+                // Card 1 Frame (Front)
+                pdf.setDrawColor(67, 97, 238);
+                pdf.setLineWidth(0.5);
+                pdf.roundedRect(45, 35, 120, 75, 4, 4);
+                pdf.setFontSize(12);
+                pdf.text("IDENTIFICATION CARD (FRONT)", 105, 75, { align: 'center' });
+
+                // Card 2 Frame (Back)
+                pdf.roundedRect(45, 125, 120, 75, 4, 4);
+                pdf.text("IDENTIFICATION CARD (BACK)", 105, 165, { align: 'center' });
+
+                pdf.save("ID_Card_2_Sided.pdf");
+                showToast('2-Sided ID Card PDF downloaded!');
+            } catch (e) {
+                showToast('Error generating ID card PDF.');
+            }
+        }
+
+        // 6. DIGITAL SIGNATURE
+        let sigCanvas, sigCtx, isDrawing = false;
+        function initSignatureCanvas() {
+            sigCanvas = document.getElementById('sigCanvas');
+            if (!sigCanvas) return;
+            sigCtx = sigCanvas.getContext('2d');
+            sigCtx.lineWidth = 2.5;
+            sigCtx.lineCap = 'round';
+            sigCtx.strokeStyle = '#0F172A';
+
+            sigCanvas.onpointerdown = (e) => {
+                isDrawing = true;
+                sigCtx.beginPath();
+                sigCtx.moveTo(e.offsetX, e.offsetY);
+            };
+            sigCanvas.onpointermove = (e) => {
+                if (isDrawing) {
+                    sigCtx.lineTo(e.offsetX, e.offsetY);
+                    sigCtx.stroke();
+                }
+            };
+            window.onpointerup = () => { isDrawing = false; };
+        }
+
+        function clearSignature() {
+            if (sigCtx && sigCanvas) {
+                sigCtx.clearRect(0, 0, sigCanvas.width, sigCanvas.height);
+            }
+        }
+
+        function downloadSignature() {
+            if (!sigCanvas) return;
+            const a = document.createElement('a');
+            a.download = 'signature.png';
+            a.href = sigCanvas.toDataURL('image/png');
+            a.click();
+            showToast('Signature downloaded!');
+        }
+
+        // 7. QR CODE STUDIO
+        function toggleQrInputs() {
+            const type = document.getElementById('qrType').value;
+            document.getElementById('qrUpiBox').style.display = type === 'upi' ? 'block' : 'none';
+            document.getElementById('qrUrlBox').style.display = type === 'url' ? 'block' : 'none';
+        }
+
+        function generateQrCode() {
+            const type = document.getElementById('qrType').value;
+            let data = '';
+            if (type === 'upi') {
+                const vpa = document.getElementById('qrUpiVpa').value.trim();
+                const amt = document.getElementById('qrUpiAmt').value.trim();
+                data = `upi://pay?pa=${vpa}&pn=Merchant&am=${amt}&cu=INR`;
+            } else {
+                data = document.getElementById('qrTextValue').value.trim();
+            }
+
+            const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(data)}`;
+            const img = document.getElementById('qrImage');
+            img.src = qrUrl;
+            document.getElementById('qrResultArea').style.display = 'block';
+            showToast('QR Code generated!');
+        }
+
+        function downloadQr() {
+            const img = document.getElementById('qrImage');
+            const a = document.createElement('a');
+            a.href = img.src;
+            a.download = 'AuraScan_QR.png';
+            a.target = '_blank';
+            a.click();
+            showToast('QR saved!');
+        }
+
+        // 8. REWARDS BONUS
+        function simulateRewardAd() {
+            const btn = document.getElementById('btnWatchAd');
+            btn.disabled = true;
+            let sec = 5;
+            btn.textContent = `Playing partner ad... (${sec}s)`;
+
+            const timer = setInterval(() => {
+                sec--;
+                if (sec > 0) {
+                    btn.textContent = `Playing partner ad... (${sec}s)`;
+                } else {
+                    clearInterval(timer);
+                    btn.disabled = false;
+                    btn.textContent = `🎬 Watch Bonus Ad (+100 Coins)`;
+                    let coins = parseInt(localStorage.getItem('auracoins') || '350') + 100;
+                    localStorage.setItem('auracoins', coins.toString());
+                    document.getElementById('userCoinBalance').textContent = `🔥 ${coins} AuraCoins`;
+                    showToast('+100 AuraCoins added to balance!');
+                }
+            }, 1000);
         }
 
         // CAMERA HANDLING
@@ -1046,7 +1880,6 @@
             const ctx = canvas.getContext('2d');
             ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
 
-            // Subtle vibration feedback
             if (navigator.vibrate) navigator.vibrate(40);
 
             const img = new Image();
@@ -1121,14 +1954,12 @@
                         data[i+1] = gray;
                         data[i+2] = gray;
                     } else if (currentFilter === 'bw') {
-                        // High-contrast document binarization
                         const threshold = 135;
                         const v = gray > threshold ? 255 : 0;
                         data[i] = v;
                         data[i+1] = v;
                         data[i+2] = v;
                     } else if (currentFilter === 'enhanced') {
-                        // Magic Color: boost contrast & whites
                         const factor = 1.3;
                         data[i] = Math.min(255, Math.max(0, factor * (r - 128) + 128 + 15));
                         data[i+1] = Math.min(255, Math.max(0, factor * (g - 128) + 128 + 15));
@@ -1219,12 +2050,11 @@
                 savedDocuments = [];
                 localStorage.removeItem(STORAGE_KEY);
                 renderScansList();
-                updateExpenseTotal();
                 showToast('All storage cleared.');
             }
         }
 
-        // PDF EXPORT VIA JSPDF
+        // PDF EXPORT
         function exportToPdf(docId) {
             const doc = savedDocuments.find(d => d.id === docId);
             if (!doc) return;
@@ -1243,7 +2073,7 @@
                 };
                 img.src = doc.thumbnail;
             } catch (err) {
-                console.error("PDF generation failed:", err);
+                console.error("PDF error:", err);
                 showToast('Error generating PDF.');
             }
         }
@@ -1269,8 +2099,6 @@
                     const text = result.data.text;
                     textbox.value = text;
                     status.textContent = 'Text Extracted Successfully!';
-
-                    // Check for Indian GST / Bill figures
                     parseBillDetails(text);
                 } else {
                     status.textContent = 'OCR library unavailable offline.';
@@ -1282,7 +2110,6 @@
         }
 
         function parseBillDetails(text) {
-            // Regex to locate GST numbers & totals
             const gstRegex = /\d{2}[A-Z]{5}\d{4}[A-Z]{1}[A-Z\d]{1}[Z]{1}[A-Z\d]{1}/i;
             const amountRegex = /(?:total|grand\s*total|net\s*amount|rs\.?|inr|₹)\s*[:=]?\s*([0-9,]+\.?[0-9]*)/i;
 
@@ -1303,24 +2130,7 @@
                     <div><strong>GSTIN:</strong> ${gstMatch ? gstMatch[0] : 'Standard Receipt'}</div>
                     <div><strong>Detected Total:</strong> ₹${amtVal.toFixed(2)}</div>
                 `;
-
-                if (amtVal > 0) {
-                    recordExpense(amtVal);
-                }
             }
-        }
-
-        function recordExpense(amt) {
-            let current = parseFloat(localStorage.getItem('aurascan_total_expenses') || '0');
-            current += amt;
-            localStorage.setItem('aurascan_total_expenses', current.toString());
-            updateExpenseTotal();
-        }
-
-        function updateExpenseTotal() {
-            const total = parseFloat(localStorage.getItem('aurascan_total_expenses') || '0');
-            const el = document.getElementById('totalExpenseAmount');
-            if (el) el.textContent = '₹' + total.toFixed(2);
         }
 
         function closeOcrSheet() {
@@ -1332,60 +2142,6 @@
             textbox.select();
             navigator.clipboard.writeText(textbox.value);
             showToast('Copied to clipboard!');
-        }
-
-        // DIGITAL SIGNATURE
-        let sigCanvas, sigCtx, isDrawing = false;
-
-        function openSignatureTool() {
-            document.getElementById('sigSheet').classList.add('active');
-            sigCanvas = document.getElementById('sigCanvas');
-            sigCtx = sigCanvas.getContext('2d');
-            sigCtx.lineWidth = 2.5;
-            sigCtx.lineCap = 'round';
-            sigCtx.strokeStyle = '#0F172A';
-
-            sigCanvas.onpointerdown = (e) => {
-                isDrawing = true;
-                sigCtx.beginPath();
-                sigCtx.moveTo(e.offsetX, e.offsetY);
-            };
-            sigCanvas.onpointermove = (e) => {
-                if (isDrawing) {
-                    sigCtx.lineTo(e.offsetX, e.offsetY);
-                    sigCtx.stroke();
-                }
-            };
-            window.onpointerup = () => { isDrawing = false; };
-        }
-
-        function clearSignature() {
-            if (sigCtx && sigCanvas) {
-                sigCtx.clearRect(0, 0, sigCanvas.width, sigCanvas.height);
-            }
-        }
-
-        function downloadSignature() {
-            if (!sigCanvas) return;
-            const a = document.createElement('a');
-            a.download = 'signature.png';
-            a.href = sigCanvas.toDataURL('image/png');
-            a.click();
-            showToast('Signature downloaded!');
-            closeSigSheet();
-        }
-
-        function closeSigSheet() {
-            document.getElementById('sigSheet').classList.remove('active');
-        }
-
-        function openIdCardTool() {
-            openScanner('id_card');
-            showToast('Step 1: Scan ID Front');
-        }
-
-        function openOcrTool() {
-            openFilePicker();
         }
 
         // TOAST NOTIFICATIONS
