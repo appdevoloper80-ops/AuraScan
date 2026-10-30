@@ -64,6 +64,12 @@ fun RewardedAdBannerCard(
     val isLoading by RewardedAdManager.isLoading.collectAsState()
     val statusMsg by RewardedAdManager.statusMessage.collectAsState()
     val credits by viewModel.rewardCredits.collectAsState()
+    
+    androidx.compose.runtime.LaunchedEffect(Unit) {
+        if (!isAdLoaded && !isLoading) {
+            RewardedAdManager.loadAd(context)
+        }
+    }
 
     Card(
         shape = RoundedCornerShape(20.dp),

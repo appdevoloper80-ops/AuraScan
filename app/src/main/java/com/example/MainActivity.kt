@@ -48,6 +48,13 @@ class MainActivity : ComponentActivity() {
         }
 
         try {
+            com.example.utils.RewardedAdManager.initialize(this)
+            com.example.utils.RewardedAdManager.loadAd(this)
+        } catch (e: Throwable) {
+            timber.log.Timber.w(e, "Rewarded Ad init fallback")
+        }
+
+        try {
             setContent {
                 val themeMode by viewModel.appThemeMode.collectAsState()
                 val isDark = when (themeMode) {
