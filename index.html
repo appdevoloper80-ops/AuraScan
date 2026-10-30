@@ -2,743 +2,1414 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AuraScan — Smart AI Document Scanner & Expense Manager</title>
-    <meta name="description" content="AuraScan is the next-generation AI document scanner for Android. Edge detection, ML Kit OCR, Gemini AI analysis, GST & bill splitting, and 100% on-device privacy.">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>AuraScan — Smart AI Document Scanner</title>
+    <meta name="description" content="AI Document Scanner with on-device OCR, edge enhancement, GST bill analysis, and PDF export.">
+    <meta name="theme-color" content="#4361EE">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <link rel="icon" type="image/jpeg" href="/logo.jpg">
+
+    <!-- jsPDF for direct PDF compilation in browser/WebView -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <!-- Tesseract.js for on-device OCR -->
+    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
+
     <style>
         :root {
             --primary: #4361EE;
             --primary-dark: #3A0CA3;
-            --accent: #4CC9F0;
+            --primary-light: #EEF2FF;
+            --secondary: #4CC9F0;
             --accent-purple: #7209B7;
-            --text-dark: #0F172A;
-            --text-muted: #64748B;
-            --bg-page: #F8FAFC;
-            --card-bg: #FFFFFF;
-            --border-light: #E2E8F0;
-            --gradient-hero: linear-gradient(135deg, #4361EE 0%, #3A0CA3 50%, #7209B7 100%);
+            --success: #10B981;
+            --warning: #F59E0B;
+            --danger: #EF4444;
+            --bg-main: #F8FAFC;
+            --bg-card: #FFFFFF;
+            --text-primary: #0F172A;
+            --text-secondary: #64748B;
+            --border-color: #E2E8F0;
+            --nav-bg: rgba(255, 255, 255, 0.95);
+            --safe-bottom: env(safe-area-inset-bottom, 16px);
         }
 
-        @media (prefers-color-scheme: dark) {
-            :root {
-                --primary: #4CC9F0;
-                --primary-dark: #4361EE;
-                --accent: #7209B7;
-                --text-dark: #F8FAFC;
-                --text-muted: #94A3B8;
-                --bg-page: #0B0F19;
-                --card-bg: #151D2F;
-                --border-light: #1E293B;
-            }
+        [data-theme="dark"] {
+            --primary: #4CC9F0;
+            --primary-dark: #4361EE;
+            --primary-light: #1E293B;
+            --secondary: #7209B7;
+            --bg-main: #0B0F19;
+            --bg-card: #151D2F;
+            --text-primary: #F8FAFC;
+            --text-secondary: #94A3B8;
+            --border-color: #1E293B;
+            --nav-bg: rgba(21, 29, 47, 0.95);
         }
 
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
+            -webkit-tap-highlight-color: transparent;
+            user-select: none;
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-            background-color: var(--bg-page);
-            color: var(--text-dark);
-            line-height: 1.6;
-            overflow-x: hidden;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-main);
+            color: var(--text-primary);
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
         }
 
-        /* HEADER & NAVBAR */
-        header {
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            background-color: rgba(255, 255, 255, 0.85);
-            backdrop-filter: blur(12px);
-            border-bottom: 1px solid var(--border-light);
-            transition: all 0.3s ease;
-        }
-
-        @media (prefers-color-scheme: dark) {
-            header {
-                background-color: rgba(11, 15, 25, 0.85);
-            }
-        }
-
-        .nav-container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 14px 24px;
+        /* TOP APP BAR */
+        .app-bar {
+            height: 60px;
+            padding: 0 16px;
+            background: var(--bg-card);
+            border-bottom: 1px solid var(--border-color);
             display: flex;
             align-items: center;
             justify-content: space-between;
+            z-index: 40;
+            flex-shrink: 0;
         }
 
-        .brand {
+        .app-brand {
             display: flex;
-            align-items: center;
-            gap: 12px;
-            text-decoration: none;
-            color: inherit;
-        }
-
-        .brand-logo {
-            width: 42px;
-            height: 42px;
-            border-radius: 10px;
-            object-fit: cover;
-            box-shadow: 0 4px 10px rgba(67, 97, 238, 0.3);
-        }
-
-        .brand-name {
-            font-size: 22px;
-            font-weight: 800;
-            letter-spacing: -0.5px;
-            background: linear-gradient(135deg, #4361EE, #7209B7);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .brand-badge {
-            font-size: 11px;
-            font-weight: 700;
-            padding: 2px 8px;
-            border-radius: 12px;
-            background-color: rgba(67, 97, 238, 0.12);
-            color: var(--primary);
-            margin-left: 4px;
-        }
-
-        .nav-links {
-            display: flex;
-            align-items: center;
-            gap: 24px;
-            list-style: none;
-        }
-
-        .nav-links a {
-            text-decoration: none;
-            color: var(--text-muted);
-            font-size: 15px;
-            font-weight: 500;
-            transition: color 0.2s;
-        }
-
-        .nav-links a:hover {
-            color: var(--primary);
-        }
-
-        .nav-cta {
-            background: var(--primary);
-            color: #FFFFFF !important;
-            padding: 8px 18px;
-            border-radius: 20px;
-            font-weight: 600;
-            box-shadow: 0 4px 14px rgba(67, 97, 238, 0.3);
-            transition: transform 0.2s, box-shadow 0.2s;
-        }
-
-        .nav-cta:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 6px 18px rgba(67, 97, 238, 0.45);
-        }
-
-        /* HERO SECTION */
-        .hero {
-            position: relative;
-            padding: 80px 24px 60px 24px;
-            max-width: 1200px;
-            margin: 0 auto;
-            display: grid;
-            grid-template-columns: 1.2fr 0.8fr;
-            gap: 48px;
-            align-items: center;
-        }
-
-        .hero-pill {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            padding: 6px 16px;
-            border-radius: 30px;
-            background: rgba(67, 97, 238, 0.1);
-            color: var(--primary);
-            font-size: 13px;
-            font-weight: 700;
-            margin-bottom: 20px;
-            border: 1px solid rgba(67, 97, 238, 0.2);
-        }
-
-        .hero h1 {
-            font-size: 52px;
-            font-weight: 900;
-            line-height: 1.15;
-            letter-spacing: -1.5px;
-            margin-bottom: 20px;
-        }
-
-        .hero h1 span {
-            background: linear-gradient(135deg, #4361EE 0%, #7209B7 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .hero p {
-            font-size: 18px;
-            color: var(--text-muted);
-            margin-bottom: 32px;
-            max-width: 580px;
-            line-height: 1.7;
-        }
-
-        .hero-actions {
-            display: flex;
-            align-items: center;
-            gap: 16px;
-            flex-wrap: wrap;
-        }
-
-        .btn-primary {
-            display: inline-flex;
             align-items: center;
             gap: 10px;
-            background: linear-gradient(135deg, #4361EE, #3A0CA3);
-            color: #FFFFFF;
-            padding: 14px 28px;
-            border-radius: 12px;
-            font-size: 16px;
-            font-weight: 700;
-            text-decoration: none;
-            box-shadow: 0 8px 24px rgba(67, 97, 238, 0.35);
-            transition: all 0.2s;
         }
 
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 12px 30px rgba(67, 97, 238, 0.5);
+        .app-logo {
+            width: 34px;
+            height: 34px;
+            border-radius: 9px;
+            object-fit: cover;
+            background: var(--primary);
         }
 
-        .btn-secondary {
-            display: inline-flex;
+        .app-title {
+            font-size: 19px;
+            font-weight: 800;
+            letter-spacing: -0.4px;
+            background: linear-gradient(135deg, var(--primary), var(--accent-purple));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .app-actions {
+            display: flex;
             align-items: center;
             gap: 8px;
-            background: var(--card-bg);
-            color: var(--text-dark);
-            padding: 14px 24px;
-            border-radius: 12px;
-            font-size: 16px;
-            font-weight: 600;
-            text-decoration: none;
-            border: 1px solid var(--border-light);
-            transition: all 0.2s;
         }
 
-        .btn-secondary:hover {
-            border-color: var(--primary);
-            color: var(--primary);
-        }
-
-        /* PHONE MOCKUP */
-        .mockup-container {
+        .icon-btn {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            border: none;
+            background: transparent;
+            color: var(--text-primary);
             display: flex;
+            align-items: center;
             justify-content: center;
-            align-items: center;
-            position: relative;
+            cursor: pointer;
+            transition: background 0.2s;
         }
 
-        .mockup-glow {
-            position: absolute;
-            width: 320px;
-            height: 320px;
-            background: radial-gradient(circle, rgba(67, 97, 238, 0.35) 0%, rgba(114, 9, 183, 0) 70%);
-            filter: blur(40px);
-            z-index: 1;
+        .icon-btn:hover, .icon-btn:active {
+            background: var(--primary-light);
         }
 
-        .phone-frame {
-            position: relative;
-            z-index: 2;
-            width: 290px;
-            height: 580px;
-            background: #000000;
-            border-radius: 40px;
-            padding: 12px;
-            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.35), inset 0 0 2px 2px rgba(255, 255, 255, 0.15);
-            border: 4px solid #1E293B;
-        }
-
-        .phone-screen {
-            width: 100%;
-            height: 100%;
-            background: #0F172A;
-            border-radius: 30px;
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-            color: #FFFFFF;
-            position: relative;
-        }
-
-        .screen-notch {
-            height: 24px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0 16px;
-            font-size: 11px;
-            color: rgba(255, 255, 255, 0.7);
-        }
-
-        .screen-viewfinder {
+        /* MAIN CONTENT AREA */
+        .content-scroll {
             flex: 1;
-            margin: 12px;
+            overflow-y: auto;
+            overflow-x: hidden;
+            padding: 16px 16px calc(80px + var(--safe-bottom)) 16px;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .tab-view {
+            display: none;
+            animation: fadeIn 0.2s ease-in-out;
+        }
+
+        .tab-view.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(4px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* CARDS & COMMON */
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
             border-radius: 16px;
-            background: linear-gradient(180deg, #1E293B 0%, #0F172A 100%);
-            border: 2px dashed #4CC9F0;
-            position: relative;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
             padding: 16px;
-            text-align: center;
+            margin-bottom: 16px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.03);
         }
 
-        .viewfinder-badge {
-            position: absolute;
-            top: 12px;
-            background: rgba(76, 201, 240, 0.2);
-            color: #4CC9F0;
-            border: 1px solid #4CC9F0;
-            padding: 2px 8px;
-            border-radius: 10px;
-            font-size: 10px;
+        .section-title {
+            font-size: 14px;
             font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-secondary);
+            margin: 16px 0 10px 4px;
         }
 
-        .viewfinder-doc {
-            width: 170px;
-            height: 210px;
-            background: #FFFFFF;
-            color: #0F172A;
-            border-radius: 8px;
-            padding: 12px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.4);
-            font-size: 9px;
-            text-align: left;
+        /* HERO CARD */
+        .hero-banner {
+            background: linear-gradient(135deg, #4361EE 0%, #3A0CA3 70%, #7209B7 100%);
+            color: #FFFFFF;
+            border-radius: 20px;
+            padding: 20px;
             position: relative;
+            overflow: hidden;
+            box-shadow: 0 10px 24px rgba(67, 97, 238, 0.35);
+            margin-bottom: 20px;
         }
 
-        .viewfinder-doc-header {
+        .hero-banner h2 {
+            font-size: 22px;
             font-weight: 800;
-            color: #4361EE;
-            border-bottom: 1px solid #E2E8F0;
-            padding-bottom: 4px;
             margin-bottom: 6px;
         }
 
-        .doc-line {
-            height: 4px;
-            background: #E2E8F0;
-            border-radius: 2px;
-            margin-bottom: 4px;
+        .hero-banner p {
+            font-size: 13px;
+            opacity: 0.9;
+            margin-bottom: 16px;
+            line-height: 1.4;
         }
 
-        .screen-bottom-bar {
-            height: 70px;
-            display: flex;
+        .hero-btn {
+            display: inline-flex;
             align-items: center;
-            justify-content: space-around;
-            padding: 0 16px;
-            background: rgba(15, 23, 42, 0.95);
+            gap: 8px;
+            background: #FFFFFF;
+            color: #4361EE;
+            border: none;
+            padding: 10px 18px;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 14px;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
         }
 
-        .shutter-btn {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            border: 3px solid #FFFFFF;
-            background: #4361EE;
-            box-shadow: 0 0 14px rgba(67, 97, 238, 0.8);
-        }
-
-        /* FEATURES SECTION */
-        .features {
-            max-width: 1200px;
-            margin: 60px auto;
-            padding: 0 24px;
-        }
-
-        .section-header {
-            text-align: center;
-            max-width: 700px;
-            margin: 0 auto 50px auto;
-        }
-
-        .section-header h2 {
-            font-size: 38px;
-            font-weight: 800;
-            margin-bottom: 14px;
-            letter-spacing: -0.8px;
-        }
-
-        .section-header p {
-            font-size: 17px;
-            color: var(--text-muted);
-        }
-
-        .feature-grid {
+        /* QUICK ACTION TILES */
+        .quick-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-            gap: 24px;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin-bottom: 20px;
         }
 
-        .feature-card {
-            background: var(--card-bg);
-            border: 1px solid var(--border-light);
-            border-radius: 18px;
-            padding: 32px 28px;
-            transition: all 0.25s;
-        }
-
-        .feature-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
-            border-color: var(--primary);
-        }
-
-        .feature-icon {
-            width: 54px;
-            height: 54px;
+        .quick-tile {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
             border-radius: 14px;
+            padding: 14px 6px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            gap: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .quick-tile:active {
+            transform: scale(0.96);
+            background: var(--primary-light);
+        }
+
+        .tile-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 26px;
-            margin-bottom: 20px;
-            background: rgba(67, 97, 238, 0.1);
-        }
-
-        .feature-card h3 {
             font-size: 20px;
-            font-weight: 700;
-            margin-bottom: 10px;
         }
 
-        .feature-card p {
-            font-size: 15px;
-            color: var(--text-muted);
-            line-height: 1.6;
+        .tile-label {
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--text-primary);
         }
 
-        /* PRIVACY BANNER */
-        .privacy-highlight {
-            max-width: 1200px;
-            margin: 80px auto;
-            padding: 48px;
-            background: linear-gradient(135deg, rgba(67, 97, 238, 0.08) 0%, rgba(114, 9, 183, 0.08) 100%);
-            border: 1px solid rgba(67, 97, 238, 0.25);
-            border-radius: 24px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 32px;
-            flex-wrap: wrap;
+        /* SCANS LIST / GRID */
+        .scans-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 12px;
         }
 
-        .privacy-highlight h2 {
-            font-size: 30px;
-            font-weight: 800;
-            margin-bottom: 8px;
-        }
-
-        .privacy-highlight p {
-            font-size: 16px;
-            color: var(--text-muted);
-            max-width: 600px;
-        }
-
-        /* SPECS TABLE */
-        .specs-section {
-            max-width: 800px;
-            margin: 60px auto;
-            padding: 0 24px;
-        }
-
-        .specs-table {
-            width: 100%;
-            border-collapse: collapse;
-            background: var(--card-bg);
+        .scan-item {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
             border-radius: 14px;
             overflow: hidden;
-            border: 1px solid var(--border-light);
+            display: flex;
+            flex-direction: column;
+            cursor: pointer;
+            transition: transform 0.2s;
+            position: relative;
         }
 
-        .specs-table th, .specs-table td {
-            padding: 16px 20px;
-            text-align: left;
-            border-bottom: 1px solid var(--border-light);
-            font-size: 15px;
+        .scan-item:active {
+            transform: scale(0.98);
         }
 
-        .specs-table th {
-            width: 35%;
-            color: var(--text-muted);
-            font-weight: 600;
-            background: rgba(0, 0, 0, 0.02);
+        .scan-thumb {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+            background: #E2E8F0;
         }
 
-        .specs-table td {
-            font-weight: 600;
+        .scan-meta {
+            padding: 10px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
         }
 
-        /* FOOTER */
-        footer {
-            border-top: 1px solid var(--border-light);
-            padding: 48px 24px 32px 24px;
-            background: var(--card-bg);
-            margin-top: 80px;
+        .scan-title {
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--text-primary);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            margin-bottom: 4px;
         }
 
-        .footer-content {
-            max-width: 1200px;
-            margin: 0 auto;
+        .scan-date {
+            font-size: 11px;
+            color: var(--text-secondary);
+        }
+
+        .scan-actions-bar {
             display: flex;
             justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 24px;
+            margin-top: 8px;
+            padding-top: 6px;
+            border-top: 1px solid var(--border-color);
         }
 
-        .footer-links {
+        .action-link {
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--primary);
+            background: none;
+            border: none;
+            cursor: pointer;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px 16px;
+            color: var(--text-secondary);
+        }
+
+        .empty-icon {
+            font-size: 48px;
+            margin-bottom: 12px;
+            opacity: 0.7;
+        }
+
+        /* BOTTOM NAVIGATION BAR */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: calc(64px + var(--safe-bottom));
+            padding-bottom: var(--safe-bottom);
+            background: var(--nav-bg);
+            backdrop-filter: blur(16px);
+            border-top: 1px solid var(--border-color);
             display: flex;
-            gap: 20px;
-            list-style: none;
+            align-items: center;
+            justify-content: space-around;
+            z-index: 50;
         }
 
-        .footer-links a {
-            color: var(--text-muted);
-            text-decoration: none;
-            font-size: 14px;
+        .nav-item {
+            flex: 1;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: color 0.2s;
         }
 
-        .footer-links a:hover {
+        .nav-item.active {
             color: var(--primary);
         }
 
-        .copyright {
-            font-size: 14px;
-            color: var(--text-muted);
+        .nav-icon {
+            font-size: 20px;
         }
 
-        @media (max-width: 900px) {
-            .hero {
-                grid-template-columns: 1fr;
-                text-align: center;
-                padding-top: 40px;
-            }
+        .nav-label {
+            font-size: 11px;
+            font-weight: 600;
+        }
 
-            .hero h1 {
-                font-size: 38px;
-            }
+        .fab-scan {
+            width: 54px;
+            height: 54px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #4361EE, #7209B7);
+            color: #FFFFFF;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            box-shadow: 0 8px 20px rgba(67, 97, 238, 0.45);
+            cursor: pointer;
+            transform: translateY(-12px);
+            transition: transform 0.2s;
+        }
 
-            .hero p {
-                margin: 0 auto 28px auto;
-            }
+        .fab-scan:active {
+            transform: translateY(-10px) scale(0.95);
+        }
 
-            .hero-actions {
-                justify-content: center;
-            }
+        /* CAMERA / SCANNER MODAL */
+        .camera-overlay {
+            position: fixed;
+            inset: 0;
+            background: #000000;
+            z-index: 100;
+            display: none;
+            flex-direction: column;
+        }
 
-            .mockup-container {
-                margin-top: 30px;
-            }
+        .camera-overlay.active {
+            display: flex;
+        }
 
-            .nav-links {
-                display: none;
-            }
+        .camera-header {
+            height: 60px;
+            padding: 0 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            color: #FFFFFF;
+            z-index: 10;
+        }
+
+        .camera-viewfinder {
+            flex: 1;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #cameraVideo {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .guide-box {
+            position: absolute;
+            width: 82%;
+            height: 70%;
+            border: 2px dashed #4CC9F0;
+            border-radius: 12px;
+            box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.55);
+            pointer-events: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .guide-text {
+            color: #4CC9F0;
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            background: rgba(0, 0, 0, 0.6);
+            padding: 4px 10px;
+            border-radius: 8px;
+        }
+
+        .camera-footer {
+            height: 100px;
+            display: flex;
+            align-items: center;
+            justify-content: space-around;
+            padding: 0 20px;
+            background: #000000;
+            z-index: 10;
+        }
+
+        .shutter-trigger {
+            width: 68px;
+            height: 68px;
+            border-radius: 50%;
+            background: #FFFFFF;
+            border: 4px solid rgba(255, 255, 255, 0.4);
+            box-shadow: 0 0 20px rgba(67, 97, 238, 0.8);
+            cursor: pointer;
+        }
+
+        .shutter-trigger:active {
+            transform: scale(0.92);
+        }
+
+        /* EDITOR / PREVIEW MODAL */
+        .editor-overlay {
+            position: fixed;
+            inset: 0;
+            background: var(--bg-main);
+            z-index: 101;
+            display: none;
+            flex-direction: column;
+        }
+
+        .editor-overlay.active {
+            display: flex;
+        }
+
+        .editor-header {
+            height: 56px;
+            padding: 0 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid var(--border-color);
+            background: var(--bg-card);
+        }
+
+        .editor-body {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+            overflow: hidden;
+            background: #111827;
+        }
+
+        #previewCanvas {
+            max-width: 100%;
+            max-height: 100%;
+            border-radius: 8px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            object-fit: contain;
+        }
+
+        .editor-toolbar {
+            padding: 12px 16px;
+            background: var(--bg-card);
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            gap: 8px;
+            overflow-x: auto;
+        }
+
+        .filter-chip {
+            padding: 8px 16px;
+            border-radius: 20px;
+            border: 1px solid var(--border-color);
+            background: var(--bg-card);
+            color: var(--text-primary);
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+
+        .filter-chip.active {
+            background: var(--primary);
+            color: #FFFFFF;
+            border-color: var(--primary);
+        }
+
+        .editor-actions {
+            padding: 12px 16px calc(12px + var(--safe-bottom)) 16px;
+            background: var(--bg-card);
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            gap: 12px;
+        }
+
+        .btn-full {
+            flex: 1;
+            padding: 12px;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 14px;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-action-primary {
+            background: var(--primary);
+            color: #FFFFFF;
+        }
+
+        .btn-action-secondary {
+            background: var(--primary-light);
+            color: var(--primary);
+        }
+
+        /* OCR & GST EXPENSE MODAL */
+        .modal-sheet {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.6);
+            z-index: 150;
+            display: none;
+            align-items: flex-end;
+        }
+
+        .modal-sheet.active {
+            display: flex;
+        }
+
+        .sheet-container {
+            width: 100%;
+            max-height: 85vh;
+            background: var(--bg-card);
+            border-radius: 24px 24px 0 0;
+            padding: 20px 20px calc(24px + var(--safe-bottom)) 20px;
+            overflow-y: auto;
+            box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.2);
+            animation: slideUp 0.25s ease-out;
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(100%); }
+            to { transform: translateY(0); }
+        }
+
+        .sheet-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .sheet-title {
+            font-size: 18px;
+            font-weight: 800;
+        }
+
+        .ocr-textbox {
+            width: 100%;
+            height: 180px;
+            padding: 12px;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            background: var(--bg-main);
+            color: var(--text-primary);
+            font-size: 13px;
+            font-family: monospace;
+            resize: none;
+            margin-bottom: 12px;
+            user-select: text;
+        }
+
+        /* TOAST NOTIFICATION */
+        .toast {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%) translateY(-100px);
+            background: #0F172A;
+            color: #FFFFFF;
+            padding: 10px 20px;
+            border-radius: 30px;
+            font-size: 13px;
+            font-weight: 600;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+            z-index: 200;
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            pointer-events: none;
+        }
+
+        .toast.show {
+            transform: translateX(-50%) translateY(0);
         }
     </style>
 </head>
 <body>
 
-    <!-- NAVBAR -->
-    <header>
-        <div class="nav-container">
-            <a href="/" class="brand">
-                <img src="/logo.jpg" alt="AuraScan Logo" class="brand-logo" onerror="this.style.display='none'">
-                <div>
-                    <span class="brand-name">AuraScan</span>
-                    <span class="brand-badge">v1.0.3</span>
-                </div>
-            </a>
-            <ul class="nav-links">
-                <li><a href="#features">Features</a></li>
-                <li><a href="#specs">Specifications</a></li>
-                <li><a href="/privacy.html">Privacy Policy</a></li>
-                <li><a href="#download" class="nav-cta">Get AuraScan</a></li>
-            </ul>
+    <!-- TOP HEADER -->
+    <header class="app-bar">
+        <div class="app-brand">
+            <img src="/logo.jpg" alt="AuraScan" class="app-logo" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22white%22><text y=%2218%22 font-size=%2218%22>⚡</text></svg>'">
+            <span class="app-title">AuraScan</span>
+        </div>
+        <div class="app-actions">
+            <button class="icon-btn" id="themeBtn" title="Toggle Theme">🌙</button>
+            <button class="icon-btn" onclick="openFilePicker()" title="Import File">📁</button>
         </div>
     </header>
 
-    <!-- HERO SECTION -->
-    <section class="hero">
-        <div class="hero-text">
-            <div class="hero-pill">
-                <span>⚡ Version 1.0.3 Ready</span>
-                <span>•</span>
-                <span>Google Play Ready</span>
+    <!-- MAIN SCROLLABLE CONTENT -->
+    <main class="content-scroll">
+
+        <!-- 1. HOME TAB -->
+        <div class="tab-view active" id="tabHome">
+            <div class="hero-banner">
+                <h2>Fast Document Scanner</h2>
+                <p>On-device OCR, Indian GST bill detection & instant PDF generation.</p>
+                <button class="hero-btn" onclick="openScanner()">
+                    <span>📸</span> Tap to Scan Document
+                </button>
             </div>
-            <h1>The Next-Gen <span>AI Document Scanner</span> for Android</h1>
-            <p>Scan invoices, IDs, study notes, and bills with sub-millimeter edge detection. Powered by on-device ML Kit OCR and Google Gemini AI for instant summaries and GST bill analysis.</p>
-            <div class="hero-actions">
-                <a href="https://play.google.com/store/apps/details?id=com.aistudio.aurascan.xrkp" class="btn-primary" target="_blank" rel="noopener">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M3.609 1.814L13.793 12 3.61 22.186a2.44 2.44 0 0 1-.61-.926V2.74c.174-.35.385-.668.61-.926zm11.602 11.604l2.584 2.584-12.78 7.378 10.196-9.962zm0-2.836L5.015.62l12.78 7.378-2.584 2.584zm1.415 1.418l3.963 2.289c1.168.675 1.168 1.776 0 2.451l-3.963 2.289-2.37-2.37 2.37-2.37z"/>
-                    </svg>
-                    Google Play
-                </a>
-                <a href="/privacy.html" class="btn-secondary">
-                    View Privacy Policy
-                </a>
+
+            <div class="section-title">Quick Scanner Modes</div>
+            <div class="quick-grid">
+                <div class="quick-tile" onclick="openScanner('document')">
+                    <div class="tile-icon" style="background: rgba(67, 97, 238, 0.1); color: #4361EE;">📄</div>
+                    <span class="tile-label">Document</span>
+                </div>
+                <div class="quick-tile" onclick="openScanner('id_card')">
+                    <div class="tile-icon" style="background: rgba(114, 9, 183, 0.1); color: #7209B7;">🪪</div>
+                    <span class="tile-label">ID Card</span>
+                </div>
+                <div class="quick-tile" onclick="openScanner('receipt')">
+                    <div class="tile-icon" style="background: rgba(16, 185, 129, 0.1); color: #10B981;">🧾</div>
+                    <span class="tile-label">Bill / GST</span>
+                </div>
+                <div class="quick-tile" onclick="openScanner('book')">
+                    <div class="tile-icon" style="background: rgba(245, 158, 11, 0.1); color: #F59E0B;">📖</div>
+                    <span class="tile-label">Book / Notes</span>
+                </div>
+            </div>
+
+            <!-- EXPENSE GLANCE -->
+            <div class="card" id="expenseSummaryCard">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                    <span style="font-size: 13px; font-weight: 700; color: var(--text-secondary);">SCANNED EXPENSES (INDIA)</span>
+                    <span style="font-size: 11px; font-weight: 700; color: var(--success); background: rgba(16, 185, 129, 0.12); padding: 2px 8px; border-radius: 10px;">GST Ready</span>
+                </div>
+                <div style="font-size: 26px; font-weight: 800; color: var(--text-primary);" id="totalExpenseAmount">₹0.00</div>
+                <div style="font-size: 12px; color: var(--text-secondary); margin-top: 4px;">Track personal expenses directly from your scanned bills.</div>
+            </div>
+
+            <div class="section-title">Recent Scans</div>
+            <div class="scans-grid" id="homeRecentScans">
+                <!-- Dynamically populated -->
             </div>
         </div>
 
-        <div class="mockup-container">
-            <div class="mockup-glow"></div>
-            <div class="phone-frame">
-                <div class="phone-screen">
-                    <div class="screen-notch">
-                        <span>9:41</span>
-                        <span>5G 100%</span>
+        <!-- 2. SCANS LIBRARY TAB -->
+        <div class="tab-view" id="tabScans">
+            <div style="margin-bottom: 16px; display: flex; gap: 8px;">
+                <input type="text" id="searchInput" placeholder="Search by document title or OCR text..." 
+                       style="flex: 1; padding: 10px 14px; border-radius: 12px; border: 1px solid var(--border-color); background: var(--bg-card); color: var(--text-primary); font-size: 14px;"
+                       oninput="renderScansList()">
+            </div>
+            <div class="scans-grid" id="allScansGrid">
+                <!-- Populated via JS -->
+            </div>
+        </div>
+
+        <!-- 3. TOOLS TAB -->
+        <div class="tab-view" id="tabTools">
+            <div class="card" onclick="openIdCardTool()" style="cursor: pointer;">
+                <div style="display: flex; align-items: center; gap: 14px;">
+                    <div style="font-size: 28px;">🪪</div>
+                    <div>
+                        <div style="font-weight: 700; font-size: 15px;">2-Sided ID Card Maker</div>
+                        <div style="font-size: 12px; color: var(--text-secondary);">Combine Front & Back of Aadhaar, PAN, or Driving License onto a single page.</div>
                     </div>
-                    <div class="screen-viewfinder">
-                        <span class="viewfinder-badge">DOCUMENT DETECTED</span>
-                        <div class="viewfinder-doc">
-                            <div class="viewfinder-doc-header">TAX INVOICE</div>
-                            <div class="doc-line" style="width: 70%"></div>
-                            <div class="doc-line" style="width: 90%"></div>
-                            <div class="doc-line" style="width: 40%"></div>
-                            <div style="margin-top: 10px; font-weight: 700; color: #0F9D58; font-size: 8px;">
-                                GST: ₹340.00 | Total: ₹2,240.00
-                            </div>
-                        </div>
+                </div>
+            </div>
+
+            <div class="card" onclick="openSignatureTool()" style="cursor: pointer;">
+                <div style="display: flex; align-items: center; gap: 14px;">
+                    <div style="font-size: 28px;">✍️</div>
+                    <div>
+                        <div style="font-weight: 700; font-size: 15px;">Digital Signature Studio</div>
+                        <div style="font-size: 12px; color: var(--text-secondary);">Draw your official signature with transparent background for documents.</div>
                     </div>
-                    <div class="screen-bottom-bar">
-                        <div style="font-size: 11px; color: #94A3B8;">Auto Flash</div>
-                        <div class="shutter-btn"></div>
-                        <div style="font-size: 11px; color: #4CC9F0;">HD Filter</div>
+                </div>
+            </div>
+
+            <div class="card" onclick="openOcrTool()" style="cursor: pointer;">
+                <div style="display: flex; align-items: center; gap: 14px;">
+                    <div style="font-size: 28px;">🔍</div>
+                    <div>
+                        <div style="font-weight: 700; font-size: 15px;">Extract Text from Image (OCR)</div>
+                        <div style="font-size: 12px; color: var(--text-secondary);">Copy text from receipts, books, or contracts to your clipboard.</div>
                     </div>
                 </div>
             </div>
         </div>
-    </section>
 
-    <!-- FEATURES -->
-    <section class="features" id="features">
-        <div class="section-header">
-            <h2>Engineered for High-Speed Productivity</h2>
-            <p>Every tool you need to digitize paperwork, extract critical numbers, and organize your finances with zero friction.</p>
-        </div>
-
-        <div class="feature-grid">
-            <div class="feature-card">
-                <div class="feature-icon">📐</div>
-                <h3>Auto-Crop & Edge Snapping</h3>
-                <p>Real-time boundary detection isolates contracts, receipts, and identity cards from any background with automatic perspective correction.</p>
+        <!-- 4. SETTINGS TAB -->
+        <div class="tab-view" id="tabSettings">
+            <div class="card">
+                <div style="font-weight: 700; font-size: 15px; margin-bottom: 12px;">App & Privacy</div>
+                <div style="display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid var(--border-color);">
+                    <span>App Version</span>
+                    <span style="font-weight: 600; color: var(--primary);">1.0.3 (Build 4)</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid var(--border-color);">
+                    <span>Data Storage</span>
+                    <span style="font-weight: 600; color: var(--success);">100% Local (On-Device)</span>
+                </div>
+                <div style="margin-top: 14px;">
+                    <a href="/privacy.html" style="color: var(--primary); font-size: 14px; font-weight: 700; text-decoration: none;">
+                        📄 Read Official Privacy Policy &rarr;
+                    </a>
+                </div>
             </div>
 
-            <div class="feature-card">
-                <div class="feature-icon">🔍</div>
-                <h3>On-Device ML Kit OCR</h3>
-                <p>Lightning-fast text extraction runs locally on your device. Extract phone numbers, emails, addresses, and tables instantly without internet.</p>
-            </div>
-
-            <div class="feature-card">
-                <div class="feature-icon">🤖</div>
-                <h3>Google Gemini AI Insights</h3>
-                <p>Send complex legal documents, medical reports, or long articles to Gemini AI for instant structured summaries, action items, and translations.</p>
-            </div>
-
-            <div class="feature-card">
-                <div class="feature-icon">🧾</div>
-                <h3>Smart Indian GST & Bill Split</h3>
-                <p>Built specifically for Indian businesses and consumers. Automatically extracts GSTIN, CGST/SGST/IGST breakdown, and splits group expenses with UPI.</p>
-            </div>
-
-            <div class="feature-card">
-                <div class="feature-icon">📄</div>
-                <h3>High-Res PDF & Image Export</h3>
-                <p>Export in A4, Letter, or Legal page sizes with customizable compression (Low, Medium, High) and secure password encryption.</p>
-            </div>
-
-            <div class="feature-card">
-                <div class="feature-icon">🛡️</div>
-                <h3>100% Private & Sandboxed</h3>
-                <p>Your documents never leave your phone unless you explicitly trigger an AI summary. No accounts, no trackers, and zero server logging.</p>
+            <div class="card">
+                <div style="font-weight: 700; font-size: 15px; margin-bottom: 8px; color: var(--danger);">Storage Management</div>
+                <p style="font-size: 12px; color: var(--text-secondary); margin-bottom: 12px;">Delete all saved scans and expense logs from this device.</p>
+                <button onclick="clearAllData()" style="width: 100%; padding: 10px; border-radius: 10px; border: 1px solid var(--danger); background: transparent; color: var(--danger); font-weight: 700; cursor: pointer;">
+                    Clear All Saved Scans
+                </button>
             </div>
         </div>
-    </section>
 
-    <!-- PRIVACY HIGHLIGHT BANNER -->
-    <section class="privacy-highlight">
-        <div>
-            <h2>Your Documents Belong to You. Period.</h2>
-            <p>AuraScan does not store your scanned files on any remote servers. Camera permissions are strictly limited to active scanning sessions.</p>
-        </div>
-        <div>
-            <a href="/privacy.html" class="btn-primary" style="background: #0F172A;">
-                Read Privacy Policy
-            </a>
-        </div>
-    </section>
+    </main>
 
-    <!-- SPECIFICATIONS -->
-    <section class="specs-section" id="specs">
-        <div class="section-header">
-            <h2>Application Specifications</h2>
-        </div>
-        <table class="specs-table">
-            <tr>
-                <th>App Name</th>
-                <td>AuraScan</td>
-            </tr>
-            <tr>
-                <th>Application ID</th>
-                <td><code>com.aistudio.aurascan.xrkp</code></td>
-            </tr>
-            <tr>
-                <th>Current Version</th>
-                <td>1.0.3 (Version Code 4)</td>
-            </tr>
-            <tr>
-                <th>Target OS</th>
-                <td>Android 7.0 (API 24) to Android 15 (API 35/36)</td>
-            </tr>
-            <tr>
-                <th>Framework</th>
-                <td>Kotlin & Jetpack Compose (M3)</td>
-            </tr>
-            <tr>
-                <th>Developer Contact</th>
-                <td><a href="mailto:appdevoloper80@gmail.com">appdevoloper80@gmail.com</a></td>
-            </tr>
-        </table>
-    </section>
+    <!-- BOTTOM NAVIGATION -->
+    <nav class="bottom-nav">
+        <button class="nav-item active" onclick="switchTab('tabHome')">
+            <span class="nav-icon">🏠</span>
+            <span class="nav-label">Home</span>
+        </button>
+        <button class="nav-item" onclick="switchTab('tabScans')">
+            <span class="nav-icon">📁</span>
+            <span class="nav-label">Library</span>
+        </button>
+        <button class="fab-scan" onclick="openScanner()" title="Scan">
+            📷
+        </button>
+        <button class="nav-item" onclick="switchTab('tabTools')">
+            <span class="nav-icon">🛠️</span>
+            <span class="nav-label">Tools</span>
+        </button>
+        <button class="nav-item" onclick="switchTab('tabSettings')">
+            <span class="nav-icon">⚙️</span>
+            <span class="nav-label">Settings</span>
+        </button>
+    </nav>
 
-    <!-- FOOTER -->
-    <footer>
-        <div class="footer-content">
-            <div class="brand">
-                <span class="brand-name">AuraScan</span>
-                <span class="copyright">&copy; 2026 AuraScan. All rights reserved.</span>
+    <!-- HIDDEN FILE INPUT FOR NATIVE PICKER FALLBACK -->
+    <input type="file" id="nativeFileInput" accept="image/*" capture="environment" style="display: none;" onchange="handleFileSelect(event)">
+
+    <!-- CAMERA SCANNER OVERLAY -->
+    <div class="camera-overlay" id="cameraOverlay">
+        <div class="camera-header">
+            <button class="icon-btn" onclick="closeScanner()" style="color: #FFFFFF;">✕</button>
+            <span style="font-weight: 700; font-size: 15px;">Document Scanner</span>
+            <button class="icon-btn" onclick="switchCameraMode()" style="color: #FFFFFF;">🔄</button>
+        </div>
+        <div class="camera-viewfinder">
+            <video id="cameraVideo" autoplay playsinline muted></video>
+            <div class="guide-box">
+                <span class="guide-text">ALIGN DOCUMENT HERE</span>
             </div>
-            <ul class="footer-links">
-                <li><a href="/privacy.html">Privacy Policy</a></li>
-                <li><a href="mailto:appdevoloper80@gmail.com">Developer Support</a></li>
-                <li><a href="#features">Features</a></li>
-            </ul>
         </div>
-    </footer>
+        <div class="camera-footer">
+            <button class="icon-btn" onclick="openFilePicker()" style="color: #FFFFFF; font-size: 24px;">🖼️</button>
+            <button class="shutter-trigger" onclick="takeSnapshot()"></button>
+            <div style="width: 38px;"></div>
+        </div>
+    </div>
 
+    <!-- DOCUMENT EDITOR / FILTER MODAL -->
+    <div class="editor-overlay" id="editorOverlay">
+        <div class="editor-header">
+            <button class="icon-btn" onclick="closeEditor()">✕</button>
+            <span style="font-weight: 700; font-size: 15px;">Edit & Enhance</span>
+            <button class="icon-btn" onclick="rotateCurrentScan()" title="Rotate 90°">🔄</button>
+        </div>
+        <div class="editor-body">
+            <canvas id="previewCanvas"></canvas>
+        </div>
+        <div class="editor-toolbar">
+            <button class="filter-chip active" onclick="applyFilter('original', this)">Original</button>
+            <button class="filter-chip" onclick="applyFilter('enhanced', this)">Magic Color</button>
+            <button class="filter-chip" onclick="applyFilter('bw', this)">B&W Document</button>
+            <button class="filter-chip" onclick="applyFilter('gray', this)">Grayscale</button>
+        </div>
+        <div class="editor-actions">
+            <button class="btn-full btn-action-secondary" onclick="runOcrOnCurrentScan()">
+                🔍 Extract Text
+            </button>
+            <button class="btn-full btn-action-primary" onclick="saveScanToLibrary()">
+                💾 Save Scan
+            </button>
+        </div>
+    </div>
+
+    <!-- OCR & GST EXPENSE BOTTOM SHEET -->
+    <div class="modal-sheet" id="ocrSheet">
+        <div class="sheet-container">
+            <div class="sheet-header">
+                <span class="sheet-title">Extracted Document Data</span>
+                <button class="icon-btn" onclick="closeOcrSheet()">✕</button>
+            </div>
+            <div id="ocrStatus" style="font-size: 13px; color: var(--primary); font-weight: 700; margin-bottom: 8px;">Processing...</div>
+            <textarea class="ocr-textbox" id="ocrResultText" placeholder="Extracted text will appear here..."></textarea>
+
+            <div class="card" id="gstCard" style="display: none; background: rgba(16, 185, 129, 0.08); border-color: rgba(16, 185, 129, 0.3);">
+                <div style="font-weight: 700; font-size: 14px; color: var(--success); margin-bottom: 6px;">🧾 Bill Breakdown Detected</div>
+                <div style="font-size: 13px;" id="gstDetails"></div>
+            </div>
+
+            <div style="display: flex; gap: 10px;">
+                <button class="btn-full btn-action-secondary" onclick="copyOcrText()">
+                    📋 Copy Text
+                </button>
+                <button class="btn-full btn-action-primary" onclick="closeOcrSheet()">
+                    Done
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- DIGITAL SIGNATURE MODAL -->
+    <div class="modal-sheet" id="sigSheet">
+        <div class="sheet-container">
+            <div class="sheet-header">
+                <span class="sheet-title">Draw Digital Signature</span>
+                <button class="icon-btn" onclick="closeSigSheet()">✕</button>
+            </div>
+            <canvas id="sigCanvas" width="340" height="180" style="width: 100%; border: 2px dashed var(--border-color); border-radius: 12px; background: #FFFFFF; touch-action: none;"></canvas>
+            <div style="display: flex; gap: 10px; margin-top: 14px;">
+                <button class="btn-full btn-action-secondary" onclick="clearSignature()">Clear</button>
+                <button class="btn-full btn-action-primary" onclick="downloadSignature()">Download PNG</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- TOAST -->
+    <div class="toast" id="toastNotice">Notification</div>
+
+    <script>
+        // CORE STATE
+        let activeTab = 'tabHome';
+        let mediaStream = null;
+        let currentFacingMode = 'environment';
+        let originalBitmap = null;
+        let currentFilteredCanvas = null;
+        let currentScanAngle = 0;
+        let currentFilter = 'original';
+
+        // DATABASE STORAGE (LOCALSTORAGE / INDEXEDDB)
+        const STORAGE_KEY = 'aurascan_documents_v1';
+        let savedDocuments = [];
+
+        function initStorage() {
+            try {
+                const stored = localStorage.getItem(STORAGE_KEY);
+                if (stored) {
+                    savedDocuments = JSON.parse(stored);
+                }
+            } catch (e) {
+                console.error("Storage error:", e);
+            }
+            renderScansList();
+            updateExpenseTotal();
+        }
+
+        function saveStorage() {
+            try {
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(savedDocuments));
+            } catch (e) {
+                console.warn("Storage quota exceeded or private mode", e);
+            }
+            renderScansList();
+            updateExpenseTotal();
+        }
+
+        // TAB NAVIGATION
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-view').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
+            
+            const target = document.getElementById(tabId);
+            if (target) target.classList.add('active');
+
+            const btns = document.querySelectorAll('.bottom-nav .nav-item');
+            if (tabId === 'tabHome') btns[0].classList.add('active');
+            if (tabId === 'tabScans') btns[1].classList.add('active');
+            if (tabId === 'tabTools') btns[2].classList.add('active');
+            if (tabId === 'tabSettings') btns[3].classList.add('active');
+
+            activeTab = tabId;
+        }
+
+        // CAMERA HANDLING
+        async function openScanner(mode = 'document') {
+            const overlay = document.getElementById('cameraOverlay');
+            overlay.classList.add('active');
+
+            try {
+                if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+                    mediaStream = await navigator.mediaDevices.getUserMedia({
+                        video: {
+                            facingMode: { ideal: currentFacingMode },
+                            width: { ideal: 1920 },
+                            height: { ideal: 1080 }
+                        },
+                        audio: false
+                    });
+                    const video = document.getElementById('cameraVideo');
+                    video.srcObject = mediaStream;
+                } else {
+                    openFilePicker();
+                }
+            } catch (err) {
+                console.warn("Camera streaming not supported or blocked, opening picker:", err);
+                closeScanner();
+                openFilePicker();
+            }
+        }
+
+        function closeScanner() {
+            if (mediaStream) {
+                mediaStream.getTracks().forEach(track => track.stop());
+                mediaStream = null;
+            }
+            document.getElementById('cameraOverlay').classList.remove('active');
+        }
+
+        function switchCameraMode() {
+            currentFacingMode = currentFacingMode === 'environment' ? 'user' : 'environment';
+            closeScanner();
+            openScanner();
+        }
+
+        function openFilePicker() {
+            document.getElementById('nativeFileInput').click();
+        }
+
+        function handleFileSelect(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const img = new Image();
+                img.onload = function() {
+                    loadIntoEditor(img);
+                };
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function takeSnapshot() {
+            const video = document.getElementById('cameraVideo');
+            if (!video || !video.videoWidth) {
+                openFilePicker();
+                return;
+            }
+
+            const canvas = document.createElement('canvas');
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+            // Subtle vibration feedback
+            if (navigator.vibrate) navigator.vibrate(40);
+
+            const img = new Image();
+            img.onload = function() {
+                closeScanner();
+                loadIntoEditor(img);
+            };
+            img.src = canvas.toDataURL('image/jpeg', 0.95);
+        }
+
+        // EDITOR & IMAGE FILTER PROCESSING
+        function loadIntoEditor(img) {
+            originalBitmap = img;
+            currentScanAngle = 0;
+            currentFilter = 'original';
+            
+            document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+            document.querySelector('.filter-chip').classList.add('active');
+
+            renderFilteredCanvas();
+            document.getElementById('editorOverlay').classList.add('active');
+        }
+
+        function closeEditor() {
+            document.getElementById('editorOverlay').classList.remove('active');
+        }
+
+        function rotateCurrentScan() {
+            currentScanAngle = (currentScanAngle + 90) % 360;
+            renderFilteredCanvas();
+        }
+
+        function applyFilter(filterName, chipBtn) {
+            currentFilter = filterName;
+            document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+            if (chipBtn) chipBtn.classList.add('active');
+            renderFilteredCanvas();
+        }
+
+        function renderFilteredCanvas() {
+            if (!originalBitmap) return;
+
+            const canvas = document.getElementById('previewCanvas');
+            const ctx = canvas.getContext('2d');
+
+            const isRotated = currentScanAngle === 90 || currentScanAngle === 270;
+            const width = isRotated ? originalBitmap.height : originalBitmap.width;
+            const height = isRotated ? originalBitmap.width : originalBitmap.height;
+
+            canvas.width = width;
+            canvas.height = height;
+
+            ctx.save();
+            ctx.translate(width / 2, height / 2);
+            ctx.rotate((currentScanAngle * Math.PI) / 180);
+            ctx.drawImage(originalBitmap, -originalBitmap.width / 2, -originalBitmap.height / 2);
+            ctx.restore();
+
+            // Pixel Filters
+            if (currentFilter !== 'original') {
+                const imgData = ctx.getImageData(0, 0, width, height);
+                const data = imgData.data;
+
+                for (let i = 0; i < data.length; i += 4) {
+                    const r = data[i];
+                    const g = data[i+1];
+                    const b = data[i+2];
+                    const gray = 0.299 * r + 0.587 * g + 0.114 * b;
+
+                    if (currentFilter === 'gray') {
+                        data[i] = gray;
+                        data[i+1] = gray;
+                        data[i+2] = gray;
+                    } else if (currentFilter === 'bw') {
+                        // High-contrast document binarization
+                        const threshold = 135;
+                        const v = gray > threshold ? 255 : 0;
+                        data[i] = v;
+                        data[i+1] = v;
+                        data[i+2] = v;
+                    } else if (currentFilter === 'enhanced') {
+                        // Magic Color: boost contrast & whites
+                        const factor = 1.3;
+                        data[i] = Math.min(255, Math.max(0, factor * (r - 128) + 128 + 15));
+                        data[i+1] = Math.min(255, Math.max(0, factor * (g - 128) + 128 + 15));
+                        data[i+2] = Math.min(255, Math.max(0, factor * (b - 128) + 128 + 15));
+                    }
+                }
+                ctx.putImageData(imgData, 0, 0);
+            }
+        }
+
+        // SAVE SCAN
+        function saveScanToLibrary() {
+            const canvas = document.getElementById('previewCanvas');
+            const dataUrl = canvas.toDataURL('image/jpeg', 0.85);
+
+            const newDoc = {
+                id: 'doc_' + Date.now(),
+                title: 'Scan ' + new Date().toLocaleDateString('en-IN', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }),
+                timestamp: Date.now(),
+                thumbnail: dataUrl,
+                extractedText: '',
+                expense: null
+            };
+
+            savedDocuments.unshift(newDoc);
+            saveStorage();
+
+            closeEditor();
+            showToast('Document saved successfully!');
+            switchTab('tabScans');
+        }
+
+        // RENDER LIBRARY
+        function renderScansList() {
+            const query = (document.getElementById('searchInput')?.value || '').toLowerCase();
+            const filtered = savedDocuments.filter(d => 
+                d.title.toLowerCase().includes(query) || 
+                (d.extractedText && d.extractedText.toLowerCase().includes(query))
+            );
+
+            const allGrid = document.getElementById('allScansGrid');
+            const homeGrid = document.getElementById('homeRecentScans');
+
+            const html = filtered.length === 0 ? `
+                <div class="empty-state" style="grid-column: 1 / -1;">
+                    <div class="empty-icon">📄</div>
+                    <div style="font-weight: 700; margin-bottom: 4px;">No Scans Yet</div>
+                    <div style="font-size: 12px;">Tap the Camera button to scan your first document!</div>
+                </div>
+            ` : filtered.map(doc => `
+                <div class="scan-item">
+                    <img src="${doc.thumbnail}" class="scan-thumb" alt="${doc.title}">
+                    <div class="scan-meta">
+                        <div>
+                            <div class="scan-title">${doc.title}</div>
+                            <div class="scan-date">${new Date(doc.timestamp).toLocaleDateString('en-IN')}</div>
+                        </div>
+                        <div class="scan-actions-bar">
+                            <button class="action-link" onclick="exportToPdf('${doc.id}')">📄 PDF</button>
+                            <button class="action-link" style="color: var(--danger);" onclick="deleteScan('${doc.id}')">🗑️</button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+
+            if (allGrid) allGrid.innerHTML = html;
+            if (homeGrid) homeGrid.innerHTML = filtered.slice(0, 4).length > 0 ? filtered.slice(0, 4).map(doc => `
+                <div class="scan-item">
+                    <img src="${doc.thumbnail}" class="scan-thumb" alt="${doc.title}">
+                    <div class="scan-meta">
+                        <div class="scan-title">${doc.title}</div>
+                        <div class="scan-date">${new Date(doc.timestamp).toLocaleDateString('en-IN')}</div>
+                    </div>
+                </div>
+            `).join('') : html;
+        }
+
+        function deleteScan(id) {
+            if (confirm('Delete this scan?')) {
+                savedDocuments = savedDocuments.filter(d => d.id !== id);
+                saveStorage();
+                showToast('Scan deleted.');
+            }
+        }
+
+        function clearAllData() {
+            if (confirm('Delete all scans and expenses permanently?')) {
+                savedDocuments = [];
+                localStorage.removeItem(STORAGE_KEY);
+                renderScansList();
+                updateExpenseTotal();
+                showToast('All storage cleared.');
+            }
+        }
+
+        // PDF EXPORT VIA JSPDF
+        function exportToPdf(docId) {
+            const doc = savedDocuments.find(d => d.id === docId);
+            if (!doc) return;
+
+            showToast('Generating PDF...');
+            try {
+                const { jsPDF } = window.jspdf;
+                const pdf = new jsPDF('p', 'mm', 'a4');
+                const img = new Image();
+                img.onload = function() {
+                    const pageWidth = pdf.internal.pageSize.getWidth();
+                    const pageHeight = pdf.internal.pageSize.getHeight();
+                    pdf.addImage(img, 'JPEG', 10, 10, pageWidth - 20, pageHeight - 20);
+                    pdf.save(`${doc.title.replace(/\s+/g, '_')}.pdf`);
+                    showToast('PDF downloaded!');
+                };
+                img.src = doc.thumbnail;
+            } catch (err) {
+                console.error("PDF generation failed:", err);
+                showToast('Error generating PDF.');
+            }
+        }
+
+        // OCR TEXT EXTRACTION
+        async function runOcrOnCurrentScan() {
+            const canvas = document.getElementById('previewCanvas');
+            if (!canvas) return;
+
+            const sheet = document.getElementById('ocrSheet');
+            const status = document.getElementById('ocrStatus');
+            const textbox = document.getElementById('ocrResultText');
+            const gstCard = document.getElementById('gstCard');
+
+            sheet.classList.add('active');
+            status.textContent = 'Extracting text with on-device OCR...';
+            textbox.value = '';
+            gstCard.style.display = 'none';
+
+            try {
+                if (window.Tesseract) {
+                    const result = await Tesseract.recognize(canvas, 'eng');
+                    const text = result.data.text;
+                    textbox.value = text;
+                    status.textContent = 'Text Extracted Successfully!';
+
+                    // Check for Indian GST / Bill figures
+                    parseBillDetails(text);
+                } else {
+                    status.textContent = 'OCR library unavailable offline.';
+                }
+            } catch (err) {
+                console.error("OCR Error:", err);
+                status.textContent = 'Failed to extract text.';
+            }
+        }
+
+        function parseBillDetails(text) {
+            // Regex to locate GST numbers & totals
+            const gstRegex = /\d{2}[A-Z]{5}\d{4}[A-Z]{1}[A-Z\d]{1}[Z]{1}[A-Z\d]{1}/i;
+            const amountRegex = /(?:total|grand\s*total|net\s*amount|rs\.?|inr|₹)\s*[:=]?\s*([0-9,]+\.?[0-9]*)/i;
+
+            const gstMatch = text.match(gstRegex);
+            const amountMatch = text.match(amountRegex);
+
+            if (gstMatch || amountMatch) {
+                const gstCard = document.getElementById('gstCard');
+                const gstDetails = document.getElementById('gstDetails');
+                gstCard.style.display = 'block';
+
+                let amtVal = 0;
+                if (amountMatch && amountMatch[1]) {
+                    amtVal = parseFloat(amountMatch[1].replace(/,/g, '')) || 0;
+                }
+
+                gstDetails.innerHTML = `
+                    <div><strong>GSTIN:</strong> ${gstMatch ? gstMatch[0] : 'Standard Receipt'}</div>
+                    <div><strong>Detected Total:</strong> ₹${amtVal.toFixed(2)}</div>
+                `;
+
+                if (amtVal > 0) {
+                    recordExpense(amtVal);
+                }
+            }
+        }
+
+        function recordExpense(amt) {
+            let current = parseFloat(localStorage.getItem('aurascan_total_expenses') || '0');
+            current += amt;
+            localStorage.setItem('aurascan_total_expenses', current.toString());
+            updateExpenseTotal();
+        }
+
+        function updateExpenseTotal() {
+            const total = parseFloat(localStorage.getItem('aurascan_total_expenses') || '0');
+            const el = document.getElementById('totalExpenseAmount');
+            if (el) el.textContent = '₹' + total.toFixed(2);
+        }
+
+        function closeOcrSheet() {
+            document.getElementById('ocrSheet').classList.remove('active');
+        }
+
+        function copyOcrText() {
+            const textbox = document.getElementById('ocrResultText');
+            textbox.select();
+            navigator.clipboard.writeText(textbox.value);
+            showToast('Copied to clipboard!');
+        }
+
+        // DIGITAL SIGNATURE
+        let sigCanvas, sigCtx, isDrawing = false;
+
+        function openSignatureTool() {
+            document.getElementById('sigSheet').classList.add('active');
+            sigCanvas = document.getElementById('sigCanvas');
+            sigCtx = sigCanvas.getContext('2d');
+            sigCtx.lineWidth = 2.5;
+            sigCtx.lineCap = 'round';
+            sigCtx.strokeStyle = '#0F172A';
+
+            sigCanvas.onpointerdown = (e) => {
+                isDrawing = true;
+                sigCtx.beginPath();
+                sigCtx.moveTo(e.offsetX, e.offsetY);
+            };
+            sigCanvas.onpointermove = (e) => {
+                if (isDrawing) {
+                    sigCtx.lineTo(e.offsetX, e.offsetY);
+                    sigCtx.stroke();
+                }
+            };
+            window.onpointerup = () => { isDrawing = false; };
+        }
+
+        function clearSignature() {
+            if (sigCtx && sigCanvas) {
+                sigCtx.clearRect(0, 0, sigCanvas.width, sigCanvas.height);
+            }
+        }
+
+        function downloadSignature() {
+            if (!sigCanvas) return;
+            const a = document.createElement('a');
+            a.download = 'signature.png';
+            a.href = sigCanvas.toDataURL('image/png');
+            a.click();
+            showToast('Signature downloaded!');
+            closeSigSheet();
+        }
+
+        function closeSigSheet() {
+            document.getElementById('sigSheet').classList.remove('active');
+        }
+
+        function openIdCardTool() {
+            openScanner('id_card');
+            showToast('Step 1: Scan ID Front');
+        }
+
+        function openOcrTool() {
+            openFilePicker();
+        }
+
+        // TOAST NOTIFICATIONS
+        function showToast(msg) {
+            const toast = document.getElementById('toastNotice');
+            toast.textContent = msg;
+            toast.classList.add('show');
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 2500);
+        }
+
+        // THEME TOGGLE
+        const themeBtn = document.getElementById('themeBtn');
+        themeBtn.onclick = () => {
+            const isDark = document.body.getAttribute('data-theme') === 'dark';
+            document.body.setAttribute('data-theme', isDark ? 'light' : 'dark');
+            themeBtn.textContent = isDark ? '🌙' : '☀️';
+        };
+
+        // STARTUP
+        window.addEventListener('DOMContentLoaded', () => {
+            initStorage();
+        });
+    </script>
 </body>
 </html>
